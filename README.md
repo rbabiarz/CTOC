@@ -1,6 +1,6 @@
 # CTOC Command
 
-**Cyber Threat Operations Center** — a high-fidelity interactive prototype for a unified SOC command dashboard. Built as a standalone HTML/React mock with no backend, no build step, and realistic mock data that tells a coherent active-intrusion story.
+**Cyber Threat Operations Center** — a high-fidelity interactive prototype for a unified SOC command dashboard. Built with **Next.js**, **React**, and **Tailwind CSS**, using realistic mock data that tells a coherent active-intrusion story.
 
 Open the dashboard: [CTOC Dashboard.html](./CTOC%20Dashboard.html)
 
@@ -207,23 +207,33 @@ This is the **reporting tier** that justifies SOC investment and communicates re
 ## Architecture
 
 ```
-CTOC Dashboard.html          Entry point — loads React 18 + Babel standalone from CDN
-├── tokens.css               Design tokens (colors, typography, severity palette)
-├── styles.css               Component and layout styles
-├── shared.jsx               Atoms (Sev, KPI, Panel, Spark, BarRow) + all mock data
-├── kill-chain.jsx           Fusion Kill Chain screen + sub-components
-├── triage.jsx               Alert triage drawer
-├── screens-1.jsx            Threat Detection, Incidents, Workload, Automation, Money, Fraud
-├── screens-2.jsx            DLP, Intel, Vuln, Insider, Travel, Executive Overview
-└── app.jsx                  App shell — sidebar nav, topbar, routing, drawer state
+app/
+├── layout.tsx               Root layout — fonts (Inter, DM Sans, JetBrains Mono)
+├── page.tsx                 Dashboard entry point
+└── globals.css              Tailwind + design tokens + SOC component styles
+
+components/
+├── dashboard/               App shell — Sidebar, Topbar, Dashboard routing
+├── ui/                      Atoms — Sev, KPI, Panel, Spark, BarRow, Btn, Tag
+├── kill-chain/              Fusion Kill Chain screen + Timeline, MITRE grid, asset map
+├── triage/                  Alert triage drawer
+└── screens/
+    ├── operations.tsx       Threat Detection, Incidents, Workload, Automation, Money, Fraud
+    └── domains.tsx          DLP, Intel, Vuln, Insider, Travel, Executive Overview
+
+lib/
+├── mock-data.ts             Static fixtures — alerts, campaigns, incidents, KPIs
+└── types.ts                 TypeScript interfaces
+
+legacy/                      Original standalone HTML/JSX prototype (archived)
 ```
 
 ### Technical approach
 
-- **No build step.** Open `CTOC Dashboard.html` in a browser or serve via any static HTTP server.
-- **React 18 via CDN** with `@babel/standalone` for in-browser JSX transpilation.
-- **Global module pattern.** Each `.jsx` file registers components on `window`; `app.jsx` wires routing.
-- **Mock data only.** All alerts, campaigns, incidents, and KPIs are static fixtures in `shared.jsx`.
+- **Next.js 15** (App Router) with **React 19** and **Tailwind CSS v4**.
+- **Client components** for all interactive screens; mock data lives in `lib/mock-data.ts`.
+- **Design tokens** in CSS custom properties (`globals.css`); Tailwind available for new layout utilities.
+- **SOC component styles** preserved as BEM classes from the original prototype.
 - **Designed for 1440px desktop.** Optimized for analyst workstation / SOC wall display proportions.
 
 ### App shell features
@@ -255,20 +265,24 @@ Components are intentionally generic (`Panel`, `KPI`, `Sev`, `Spark`, `BarRow`, 
 
 ## Quick start
 
-### Option 1: Static HTTP server (recommended)
-
-JSX files load via `<script src>` and require HTTP — `file://` will not work reliably.
+Requires Node.js 18+.
 
 ```bash
 cd CTOC
-python3 -m http.server 8080
+npm install
+npm run dev
 ```
 
-Open: [http://localhost:8080/CTOC%20Dashboard.html](http://localhost:8080/CTOC%20Dashboard.html)
+Open [http://localhost:3000](http://localhost:3000)
 
-### Option 2: Direct open
+Production build:
 
-Some browsers may block external script loading over `file://`. Use a local server if scripts fail to load.
+```bash
+npm run build
+npm start
+```
+
+The original standalone HTML prototype is archived in `legacy/` if you need to reference it.
 
 ---
 
