@@ -2,7 +2,7 @@
 
 **Cyber Threat Operations Center** — a high-fidelity interactive prototype for a unified SOC command dashboard. Built with **Next.js**, **React**, and **Tailwind CSS**, using realistic mock data that tells a coherent active-intrusion story.
 
-Open the dashboard: [CTOC Dashboard.html](./CTOC%20Dashboard.html)
+**Live dashboard:** [rbabiarz.github.io/CTOC](https://rbabiarz.github.io/CTOC/)
 
 Repository: [github.com/rbabiarz/CTOC](https://github.com/rbabiarz/CTOC)
 
@@ -265,7 +265,9 @@ Components are intentionally generic (`Panel`, `KPI`, `Sev`, `Spark`, `BarRow`, 
 
 ## Quick start
 
-Requires Node.js 18+.
+**Live demo (GitHub Pages):** [rbabiarz.github.io/CTOC](https://rbabiarz.github.io/CTOC/)
+
+Local development requires Node.js 18+.
 
 ```bash
 cd CTOC
