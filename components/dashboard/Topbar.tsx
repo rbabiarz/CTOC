@@ -1,6 +1,7 @@
 'use client';
 
 import { SCREEN_TITLES } from '@/components/dashboard/Sidebar';
+import { ThemeToggle } from '@/components/theme/ThemeToggle';
 import type { ScreenId } from '@/lib/types';
 
 interface TopbarProps {
@@ -39,6 +40,8 @@ export function Topbar({ active, time, onTimeRange, timeRange }: TopbarProps) {
       <span className="topbar__chip">⌕ SEARCH</span>
       <span className="topbar__chip">⌥ FILTERS</span>
       <span className="topbar__chip">SAVED VIEWS</span>
+
+      <ThemeToggle />
 
       <div className="topbar__clock">
         <span className="live-dot"></span>

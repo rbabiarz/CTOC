@@ -244,7 +244,7 @@ export function VulnScreen() {
                 const intensity = Number(v) / max;
                 const sev = ['crit','high','med','low'][j];
                 return (
-                  <div key={j} style={{ background: `var(--sev-${sev})`, opacity: 0.15 + intensity * 0.75, color: intensity > 0.6 ? 'white' : 'var(--color-ink)', padding: '6px 8px', textAlign: 'center', fontFamily: 'var(--mono)', fontWeight: 600, cursor: 'pointer' }}>
+                  <div key={j} style={{ background: `var(--sev-${sev})`, opacity: 0.15 + intensity * 0.75, color: intensity > 0.6 ? 'var(--color-on-heat-cell)' : 'var(--color-ink)', padding: '6px 8px', textAlign: 'center', fontFamily: 'var(--mono)', fontWeight: 600, cursor: 'pointer' }}>
                     {v}
                   </div>
                 );
