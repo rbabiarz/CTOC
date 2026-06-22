@@ -335,7 +335,7 @@ export function AutomationScreen() {
     </div>
 
     <div className="kpis" style={{ gridTemplateColumns: 'repeat(6, 1fr)', marginBottom: 10 }}>
-      <KPI label="Playbooks active" value="142" footer="29 critical-tier" />
+      <KPI label="Playbooks active" value="144" footer="29 critical-tier" />
       <KPI label="Runs (24h)" value="3,884" delta="+12%" deltaDir="up" />
       <KPI label="Success rate" value="96.4%" delta="+0.8" deltaDir="up" />
       <KPI label="Auto-contained" value="83%" delta="+4" deltaDir="up" />

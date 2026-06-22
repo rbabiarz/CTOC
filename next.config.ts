@@ -1,7 +1,9 @@
 import type { NextConfig } from "next";
 import path from "path";
 
-const isGitHubPages = process.env.GITHUB_PAGES === "true";
+const isGitHubPages =
+  process.env.GITHUB_PAGES === "true" ||
+  (process.env.GITHUB_ACTIONS === "true" && process.env.CI === "true");
 
 const nextConfig: NextConfig = {
   output: "export",
