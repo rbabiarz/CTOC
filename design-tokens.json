@@ -1,0 +1,42 @@
+{
+  "_comment": "CTOC top-level token export. RUNTIME SOURCE OF TRUTH is app/globals.css (CSS custom properties; :root = light, [data-theme=dark] = dark). This file mirrors those values for tooling. Source tiers: tokens/primitives.json -> tokens/semantic.json -> tokens/themes/{light,dark}.json.",
+  "color": {
+    "canvas": "#fffcf5",
+    "surface": { "soft": "#faf5e8", "card": "#f5f0e0", "strong": "#ebe6d6" },
+    "panel": { "bg": "#fffefa", "bgStrong": "#fbf6e9" },
+    "ink": "#0a0a0a",
+    "body": { "default": "#2a2a2a", "strong": "#1a1a1a" },
+    "muted": { "default": "#595959", "soft": "#6a6a6a" },
+    "hairline": { "default": "#e6dfc8", "strong": "#d6cfb5" },
+    "accent": { "primary": "#0a0a0a", "blue": "#1570ef", "onPrimary": "#ffffff" }
+  },
+  "severity": {
+    "critical": { "fill": "#d81b2a", "solid": "#d81b2a", "on": "#ffffff", "bg": "#fde2e2" },
+    "high":     { "fill": "#e64d3c", "text": "#a3331f", "bg": "#fbe5e0" },
+    "medium":   { "fill": "#d4a036", "text": "#8a5e0e", "bg": "#fbf0d4" },
+    "low":      { "fill": "#1570ef", "text": "#1e40af", "bg": "#d9e8fc" },
+    "resolved": { "fill": "#166534", "bg": "#d1fae5" }
+  },
+  "type": {
+    "family": {
+      "display": "Inter, system-ui, sans-serif",
+      "body": "'DM Sans', system-ui, sans-serif",
+      "mono": "'JetBrains Mono', ui-monospace, monospace"
+    },
+    "size": {
+      "displayXl": "72px", "displayLg": "60px", "displayMd": "48px", "displaySm": "36px", "displayXs": "30px",
+      "textXl": "24px", "textLg": "20px", "textMd": "18px", "textSm": "16px", "textXs": "14px", "textXxs": "12px"
+    },
+    "weight": { "regular": 400, "medium": 500, "semibold": 600 }
+  },
+  "space": {
+    "none": "0", "xxs": "2px", "xs": "4px", "sm": "8px", "md": "12px", "lg": "16px",
+    "xl": "20px", "2xl": "24px", "3xl": "32px", "4xl": "48px", "5xl": "64px", "6xl": "96px"
+  },
+  "radius": { "none": "0", "xxs": "2px", "xs": "4px", "sm": "6px", "md": "8px", "lg": "12px", "xl": "16px", "full": "50%" },
+  "shadow": {
+    "sm": "0 1px 3px rgba(16,24,40,.1), 0 1px 2px rgba(16,24,40,.06)",
+    "md": "0 4px 8px -2px rgba(16,24,40,.1), 0 2px 4px -2px rgba(16,24,40,.06)",
+    "lg": "0 12px 16px -4px rgba(16,24,40,.08), 0 4px 6px -2px rgba(16,24,40,.03)"
+  }
+}

@@ -310,7 +310,11 @@ To experience the prototype as a coherent story:
 - **Not a production SOC platform.** No real telemetry, no authentication, no API layer.
 - **Not a SIEM replacement.** It demonstrates UX for fused visibility, not log ingestion or search.
 - **Not wired to live data.** All numbers, campaigns, and timelines are illustrative fixtures.
-- **Not mobile-responsive.** Layout targets 1440px SOC analyst workstations.
+
+Optimized for 1440px SOC analyst workstations, but **fully responsive** down to ~360px (the
+sidebar collapses to an off-canvas drawer, panels stack, and dense tables scroll within their
+panels) and **accessible to WCAG 2.2 AA / AODA** (keyboard-operable, screen-reader friendly,
+axe-clean in both light and dark themes).
 
 ---
 
@@ -321,6 +325,27 @@ To experience the prototype as a coherent story:
 - **UX designers** prototyping high-density operational interfaces
 - **CISO / security leadership** reviewing executive reporting patterns
 - **Analysts and IR leads** validating workflow assumptions before vendor selection or build decisions
+
+---
+
+## Design deep-dive workspace
+
+Alongside the app code, this repo carries a product-design "deep dive" workspace so an AI
+assistant (and a human) have full context on day one:
+
+| Path | What's there |
+|------|--------------|
+| `CLAUDE.md` | Entry point — how to work here, stack, commands, links to everything |
+| `DESIGN.md` | Design philosophy, the severity model, north star |
+| `.claude/` | `rules/` (design-system, accessibility, code-style, content-voice), `commands/`, `agents/`, settings |
+| `design-tokens.json` · `tokens/` | Token export + three-tier source (primitives → semantic → light/dark), mirroring `app/globals.css` |
+| `design-system/` | `foundations`, `components`, `patterns`, `usage-guidelines` |
+| `docs/` | `brief`, `product-requirements`, `design-decisions` (ADR log), `personas`, `information-architecture`, `success-metrics`, `constraints`, `open-questions`, `changelog` |
+| `reference/` | Screenshots, competitors, moodboards, flows, research (+ `synthesis.md`), brand |
+| `app/` · `components/` · `lib/` | The live Next.js application |
+
+The **runtime source of truth for tokens is [`app/globals.css`](./app/globals.css)**; the JSON
+files document/mirror it. Start with `CLAUDE.md`.
 
 ---
 

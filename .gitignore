@@ -4,3 +4,10 @@ node_modules
 out
 *.tsbuildinfo
 next-env.d.ts
+
+# local & secrets (deep-dive workspace)
+CLAUDE.local.md
+.claude/settings.local.json
+.env
+.env.local
+Thumbs.db

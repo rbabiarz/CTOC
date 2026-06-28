@@ -1,0 +1,41 @@
+{
+  "_comment": "Tier 2 — role-based aliases pointing at primitives. Components reference THESE (via the matching CSS var in app/globals.css). Theme files override the theme-dependent ones.",
+  "color": {
+    "bg.canvas": "{palette.cream.canvas}",
+    "surface.soft": "{palette.cream.soft}",
+    "surface.card": "{palette.cream.card}",
+    "surface.strong": "{palette.cream.strong}",
+    "panel.bg": "#fffefa",
+    "panel.bg.strong": "{palette.cream.strong}",
+    "fg.ink": "{palette.ink}",
+    "fg.body": "#2a2a2a",
+    "fg.muted": "#595959",
+    "fg.muted.soft": "#6a6a6a",
+    "hairline.default": "#e6dfc8",
+    "hairline.strong": "#d6cfb5",
+    "accent.primary": "{palette.ink}",
+    "accent.onPrimary": "{palette.white}"
+  },
+  "severity": {
+    "critical.fill": "{palette.red.600}",
+    "critical.solid": "{palette.red.600}",
+    "critical.on": "{palette.white}",
+    "critical.bg": "{palette.red.tintLight}",
+    "high.fill": "{palette.brand.coral}",
+    "high.text": "#a3331f",
+    "high.bg": "#fbe5e0",
+    "medium.fill": "{palette.brand.ochre}",
+    "medium.text": "#8a5e0e",
+    "medium.bg": "#fbf0d4",
+    "low.fill": "{palette.brand.blue}",
+    "low.text": "#1e40af",
+    "low.bg": "#d9e8fc",
+    "resolved.fill": "{palette.green.700}",
+    "resolved.bg": "{palette.green.tintLight}"
+  },
+  "type": {
+    "font.display": "{font.inter}",
+    "font.body": "{font.dmSans}",
+    "font.mono": "{font.jetbrainsMono}"
+  }
+}

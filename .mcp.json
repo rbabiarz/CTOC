@@ -1,0 +1,9 @@
+{
+  "mcpServers": {
+    "_comment": "MCP servers used by the CTOC project. Figma is the design source of truth (file i3YWhwkly7iJEmk0tK3YJ7); filesystem is scoped to the repo.",
+    "filesystem": {
+      "command": "npx",
+      "args": ["-y", "@modelcontextprotocol/server-filesystem", "."]
+    }
+  }
+}

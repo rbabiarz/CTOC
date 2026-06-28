@@ -1,0 +1,29 @@
+{
+  "_comment": "Tier 3 — dark theme. Matches [data-theme=\"dark\"] in app/globals.css. Warm charcoal surfaces, warm-white ink, brighter severity fills (with -text variants for AA text on dark). Critical pill stays a solid #d81b2a with white text.",
+  "color": {
+    "bg.canvas": "#141312",
+    "panel.bg": "#1a1917",
+    "panel.bg.strong": "#222019",
+    "fg.ink": "#f5f2eb",
+    "fg.body": "#d4cfc4",
+    "fg.muted": "#b8b0a4",
+    "fg.muted.soft": "#9a9288",
+    "hairline.default": "#353029",
+    "hairline.strong": "#454038"
+  },
+  "severity": {
+    "critical.fill": "#f87171",
+    "critical.solid": "#d81b2a",
+    "critical.bg": "#3f1515",
+    "high.fill": "#fb7185",
+    "high.text": "#fecaca",
+    "high.bg": "#3d1812",
+    "medium.fill": "#fbbf24",
+    "medium.text": "#fde68a",
+    "medium.bg": "#3d3010",
+    "low.fill": "#60a5fa",
+    "low.bg": "#1e3050",
+    "resolved.fill": "#4ade80",
+    "resolved.bg": "#14532d"
+  }
+}

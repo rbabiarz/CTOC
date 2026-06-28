@@ -1,0 +1,29 @@
+{
+  "_comment": "Tier 1 — raw values, no semantic meaning. Mirrors the primitive layer of app/globals.css. Referenced by semantic.json; never used directly in components.",
+  "palette": {
+    "cream": { "canvas": "#fffcf5", "soft": "#faf5e8", "card": "#f5f0e0", "strong": "#ebe6d6" },
+    "warmCharcoal": { "900": "#141312", "panel": "#1a1917", "panelStrong": "#222019", "elevated": "#2a2724" },
+    "ink": "#0a0a0a",
+    "white": "#ffffff",
+    "gray": {
+      "50": "#f9fafb", "100": "#f2f4f7", "200": "#e4e7ec", "300": "#d0d5dd", "400": "#98a2b3",
+      "500": "#667085", "600": "#475467", "700": "#344054", "800": "#1d2939", "900": "#101828"
+    },
+    "brand": {
+      "blue": "#1570ef", "coral": "#e64d3c", "ochre": "#d4a036", "teal": "#0d5350",
+      "lavender": "#8b6fd9", "peach": "#ff9d66", "mint": "#4ca88f", "pink": "#d63b75"
+    },
+    "red": { "600": "#d81b2a", "400": "#f87171", "tintLight": "#fde2e2", "tintDark": "#3f1515" },
+    "green": { "700": "#166534", "400": "#4ade80", "tintLight": "#d1fae5", "tintDark": "#14532d" }
+  },
+  "scale": {
+    "space": { "0": "0", "0.5": "2px", "1": "4px", "2": "8px", "3": "12px", "4": "16px", "5": "20px", "6": "24px", "8": "32px", "12": "48px", "16": "64px", "24": "96px" },
+    "radius": { "0": "0", "0.5": "2px", "1": "4px", "1.5": "6px", "2": "8px", "3": "12px", "4": "16px", "full": "50%" },
+    "fontSize": { "12": "12px", "14": "14px", "16": "16px", "18": "18px", "20": "20px", "24": "24px", "30": "30px", "36": "36px", "48": "48px", "60": "60px", "72": "72px" }
+  },
+  "font": {
+    "inter": "Inter, system-ui, sans-serif",
+    "dmSans": "'DM Sans', system-ui, sans-serif",
+    "jetbrainsMono": "'JetBrains Mono', ui-monospace, monospace"
+  }
+}

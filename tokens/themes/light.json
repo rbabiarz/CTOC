@@ -1,0 +1,23 @@
+{
+  "_comment": "Tier 3 — light theme. Matches :root in app/globals.css. Warm cream surfaces, near-black ink, vivid-but-AA severity.",
+  "color": {
+    "bg.canvas": "#fffcf5",
+    "panel.bg": "#fffefa",
+    "panel.bg.strong": "#fbf6e9",
+    "fg.ink": "#0a0a0a",
+    "fg.body": "#2a2a2a",
+    "fg.muted": "#595959",
+    "fg.muted.soft": "#6a6a6a",
+    "hairline.default": "#e6dfc8",
+    "hairline.strong": "#d6cfb5",
+    "row.hover": "#faf3df"
+  },
+  "severity": {
+    "critical.fill": "#d81b2a",
+    "critical.solid": "#d81b2a",
+    "high.fill": "#e64d3c",
+    "medium.fill": "#d4a036",
+    "low.fill": "#1570ef",
+    "resolved.fill": "#166534"
+  }
+}
