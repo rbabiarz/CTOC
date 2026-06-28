@@ -1,6 +1,6 @@
 'use client';
 
-import type { CSSProperties, MouseEventHandler, ReactNode, ButtonHTMLAttributes } from 'react';
+import type { CSSProperties, ReactNode, ButtonHTMLAttributes } from 'react';
 import type { Severity } from '@/lib/types';
 
 interface SevProps {
@@ -11,7 +11,7 @@ interface SevProps {
 export function Sev({ level, children }: SevProps) {
   return (
     <span className={`sev sev--${level}`}>
-      <span className="sq"></span>
+      <span className="sq" aria-hidden="true"></span>
       {children || level.toUpperCase()}
     </span>
   );
@@ -19,19 +19,19 @@ export function Sev({ level, children }: SevProps) {
 
 interface TagProps {
   children: ReactNode;
-  onClick?: MouseEventHandler<HTMLSpanElement>;
+  onClick?: () => void;
 }
 
 export function Tag({ children, onClick }: TagProps) {
-  return (
-    <span
-      className="tag"
-      onClick={onClick}
-      style={onClick ? { cursor: 'pointer' } : undefined}
-    >
-      {children}
-    </span>
-  );
+  // Interactive tags must be real buttons (keyboard + role); static tags stay spans.
+  if (onClick) {
+    return (
+      <button type="button" className="tag" style={{ cursor: 'pointer' }} onClick={onClick}>
+        {children}
+      </button>
+    );
+  }
+  return <span className="tag">{children}</span>;
 }
 
 interface BtnProps extends ButtonHTMLAttributes<HTMLButtonElement> {
@@ -69,7 +69,7 @@ export function Panel({ title, sub, toolbar, children, flush, style, className }
     <div className={`panel ${className || ''}`} style={style}>
       {title && (
         <div className="panel__head">
-          <span className="panel__title">{title}</span>
+          <h2 className="panel__title">{title}</h2>
           {sub && <span className="panel__sub">{sub}</span>}
           {toolbar && <span className="panel__toolbar">{toolbar}</span>}
         </div>
@@ -96,7 +96,7 @@ export function KPI({ label, value, delta, deltaDir, footer, accent }: KPIProps)
         {value}
         {delta && (
           <span className={`kpi__delta ${deltaDir || 'flat'}`}>
-            {deltaDir === 'up' ? '▲' : deltaDir === 'down' ? '▼' : '—'} {delta}
+            <span aria-hidden="true">{deltaDir === 'up' ? '▲' : deltaDir === 'down' ? '▼' : '—'}</span> {delta}
           </span>
         )}
       </div>
@@ -128,7 +128,7 @@ export function Spark({ data, width = 80, height = 22, color, fill }: SparkProps
   const dFill = `${d} L${width},${height} L0,${height} Z`;
   const stroke = color || 'var(--color-ink)';
   return (
-    <svg className="spark" width={width} height={height}>
+    <svg className="spark" width={width} height={height} aria-hidden="true" focusable="false">
       {fill && <path d={dFill} fill={fill} opacity="0.18" />}
       <path d={d} stroke={stroke} strokeWidth="1.2" fill="none" />
     </svg>

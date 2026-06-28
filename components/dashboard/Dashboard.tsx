@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Sidebar } from '@/components/dashboard/Sidebar';
 import { Topbar } from '@/components/dashboard/Topbar';
 import { KillChainScreen } from '@/components/kill-chain';
@@ -28,6 +28,46 @@ export function Dashboard() {
   const [alert, setAlert] = useState<Alert | null>(null);
   const [timeRange, setTimeRange] = useState('LIVE');
   const [time, setTime] = useState('14:42:08');
+  const [navOpen, setNavOpen] = useState(false);
+  const [isCompact, setIsCompact] = useState(false);
+  const navRef = useRef<HTMLElement>(null);
+  const navWasOpen = useRef(false);
+
+  // Track whether the sidebar is in off-canvas (drawer) mode.
+  useEffect(() => {
+    const mq = window.matchMedia('(max-width: 1023px)');
+    const update = () => setIsCompact(mq.matches);
+    update();
+    mq.addEventListener('change', update);
+    return () => mq.removeEventListener('change', update);
+  }, []);
+
+  // Escape closes the off-canvas nav
+  useEffect(() => {
+    if (!navOpen) return;
+    const onKey = (e: KeyboardEvent) => { if (e.key === 'Escape') setNavOpen(false); };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, [navOpen]);
+
+  // Off-canvas nav focus management (2.4.3): move focus into the drawer on open,
+  // restore it to the toggle on close.
+  useEffect(() => {
+    if (!isCompact) return;
+    if (navOpen) {
+      navWasOpen.current = true;
+      const first = navRef.current?.querySelector<HTMLElement>('button, [href], [tabindex]:not([tabindex="-1"])');
+      first?.focus();
+    } else if (navWasOpen.current) {
+      navWasOpen.current = false;
+      document.getElementById('nav-toggle')?.focus();
+    }
+  }, [navOpen, isCompact]);
+
+  const selectScreen = (id: ScreenId) => {
+    setActive(id);
+    setNavOpen(false); // collapse the drawer after navigating on mobile
+  };
 
   useEffect(() => {
     const tick = () => {
@@ -91,10 +131,36 @@ export function Dashboard() {
   }
 
   return (
-    <div className="app">
-      <Topbar active={active} time={time} onTimeRange={setTimeRange} timeRange={timeRange} />
-      <Sidebar active={active} onSelect={setActive} />
-      <main className="app__main">
+    <div className={`app ${navOpen ? 'app--nav-open' : ''}`}>
+      <a href="#main-content" className="skip-link">Skip to main content</a>
+      <Topbar
+        active={active}
+        time={time}
+        onTimeRange={setTimeRange}
+        timeRange={timeRange}
+        navOpen={navOpen}
+        onToggleNav={() => setNavOpen(o => !o)}
+      />
+      <Sidebar
+        active={active}
+        onSelect={selectScreen}
+        open={navOpen}
+        hidden={isCompact && !navOpen}
+        navRef={navRef}
+      />
+      {navOpen && (
+        <div
+          className="nav-scrim"
+          aria-hidden="true"
+          onClick={() => setNavOpen(false)}
+        />
+      )}
+      <main
+        className="app__main"
+        id="main-content"
+        tabIndex={-1}
+        inert={isCompact && navOpen ? true : undefined}
+      >
         {Screen}
       </main>
       {alert && <TriageDrawer alert={alert} onClose={() => setAlert(null)} />}

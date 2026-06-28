@@ -7,28 +7,15 @@ export function ThemeToggle() {
   const isDark = theme === 'dark';
 
   return (
-    <div
-      className="theme-toggle"
-      role="group"
-      aria-label="Color theme"
+    <button
+      type="button"
+      className="theme-toggle topbar__chip"
+      aria-pressed={isDark}
+      aria-label="Dark theme"
+      title={isDark ? 'Switch to light theme' : 'Switch to dark theme'}
+      onClick={() => setTheme(isDark ? 'light' : 'dark')}
     >
-      <span className="dim mono uppr theme-toggle__label">THEME</span>
-      <button
-        type="button"
-        className={`topbar__chip ${!isDark ? 'topbar__chip--active' : ''}`}
-        aria-pressed={!isDark}
-        onClick={() => setTheme('light')}
-      >
-        ☀ LIGHT
-      </button>
-      <button
-        type="button"
-        className={`topbar__chip ${isDark ? 'topbar__chip--active' : ''}`}
-        aria-pressed={isDark}
-        onClick={() => setTheme('dark')}
-      >
-        ☾ DARK
-      </button>
-    </div>
+      <span aria-hidden="true">{isDark ? '☾' : '☀'}</span>
+    </button>
   );
 }

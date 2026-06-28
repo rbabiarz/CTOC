@@ -40,7 +40,7 @@ export function ThreatDetectionScreen({  onOpenAlert  }: ScreenProps) {
       {/* Filter strip */}
       <div className="panel" style={{ marginBottom: 10 }}>
         <div className="panel__head">
-          <span className="panel__title">Filters</span>
+          <h2 className="panel__title">Filters</h2>
           <span className="panel__sub">{filtered.length} of {ALERTS.length} alerts</span>
           <span className="panel__toolbar" style={{ gap: 12 }}>
             <span style={{ display: 'flex', gap: 4, alignItems: 'center' }}>
@@ -75,7 +75,13 @@ export function ThreatDetectionScreen({  onOpenAlert  }: ScreenProps) {
             </tr></thead>
             <tbody>
               {filtered.map(a => (
-                <tr key={a.id} onClick={() => onOpenAlert?.(a)}>
+                <tr
+                  key={a.id}
+                  onClick={() => onOpenAlert?.(a)}
+                  tabIndex={0}
+                  aria-label={`Open triage for ${a.id}, ${a.sev} severity: ${a.rule}`}
+                  onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onOpenAlert?.(a); } }}
+                >
                   <td className="mono dim">{a.t}</td>
                   <td><Sev level={a.sev} /></td>
                   <td className="mono">{a.id}</td>
@@ -83,7 +89,7 @@ export function ThreatDetectionScreen({  onOpenAlert  }: ScreenProps) {
                   <td className="mono">{a.host}</td>
                   <td className="mono dim">{a.src}</td>
                   <td className="num">{a.conf}</td>
-                  <td className="mono">{a.status === 'open' ? <span style={{color: 'var(--sev-critical)'}}>● OPEN</span> : a.status === 'triage' ? <span style={{color: 'var(--sev-medium)'}}>● TRIAGE</span> : <span style={{color: 'var(--sev-resolved)'}}>● {a.status.toUpperCase()}</span>}</td>
+                  <td className="mono">{a.status === 'open' ? <span style={{color: 'var(--sev-critical)'}}>● OPEN</span> : a.status === 'triage' ? <span style={{color: 'var(--sev-medium-text)'}}>● TRIAGE</span> : <span style={{color: 'var(--sev-resolved)'}}>● {a.status.toUpperCase()}</span>}</td>
                   <td className="mono dim">{a.assigned}</td>
                 </tr>
               ))}
@@ -153,7 +159,15 @@ export function IncidentsScreen({  onOpenAlert  }: ScreenProps) {
             </tr></thead>
             <tbody>
               {INCIDENTS.map(i => (
-                <tr key={i.id} className={selected === i.id ? 'is-active' : ''} onClick={() => setSelected(i.id)}>
+                <tr
+                  key={i.id}
+                  className={selected === i.id ? 'is-active' : ''}
+                  onClick={() => setSelected(i.id)}
+                  tabIndex={0}
+                  aria-current={selected === i.id ? 'true' : undefined}
+                  aria-label={`Show detail for incident ${i.id}, ${i.title}`}
+                  onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setSelected(i.id); } }}
+                >
                   <td className="mono">{i.id}</td>
                   <td><span className="ink">{i.title}</span></td>
                   <td><Sev level={i.sev} /></td>
@@ -229,7 +243,11 @@ function ShiftHeatmap() {
 
   return (
     <Panel title="Shift heatmap" sub="case opens · 24h × analyst">
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+      <div
+        style={{ display: 'flex', flexDirection: 'column', gap: 2 }}
+        role="img"
+        aria-label="Case-open intensity heatmap across 24 hours for 8 analysts; darker cells indicate higher activity, peaking around mid-shift."
+      >
         {rows.map((row) => (
           <div key={row.who} style={{ display: 'grid', gridTemplateColumns: '110px 1fr', gap: 6, alignItems: 'center' }}>
             <span className="mono" style={{ fontSize: 10, color: 'var(--color-muted)' }}>{row.who.split(' ').slice(0, 2).join(' ')}</span>
@@ -283,7 +301,7 @@ export function WorkloadScreen() {
                 <td className="num" style={{ color: q.crit > 1 ? 'var(--sev-critical)' : 'var(--color-body)', fontWeight: q.crit > 1 ? 600 : 400 }}>{q.crit}</td>
                 <td><div className="bar-row__track" style={{ width: 200 }}><div className={`bar-row__fill ${q.util > 90 ? 'crit' : q.util > 80 ? 'high' : ''}`} style={{ width: `${q.util}%` }}></div></div></td>
                 <td className="num">{q.sla}%</td>
-                <td className="mono" style={{ color: q.util > 90 ? 'var(--sev-critical)' : q.sla < 85 ? 'var(--sev-medium)' : 'var(--sev-resolved)' }}>
+                <td className="mono" style={{ color: q.util > 90 ? 'var(--sev-critical)' : q.sla < 85 ? 'var(--sev-medium-text)' : 'var(--sev-resolved)' }}>
                   {q.util > 90 ? '● OVERLOAD' : q.sla < 85 ? '● AT RISK' : '● OK'}
                 </td>
               </tr>
@@ -365,7 +383,7 @@ export function AutomationScreen() {
                 <td className="mono">{r[3]}</td>
                 <td className="num">{r[4]}</td>
                 <td className="num">{r[5]}</td>
-                <td className="mono" style={{ color: r[6] === 'SUCCESS' ? 'var(--sev-resolved)' : r[6] === 'PARTIAL' ? 'var(--sev-medium)' : 'var(--sev-critical)' }}>● {r[6]}</td>
+                <td className="mono" style={{ color: r[6] === 'SUCCESS' ? 'var(--sev-resolved)' : r[6] === 'PARTIAL' ? 'var(--sev-medium-text)' : 'var(--sev-critical)' }}>● {r[6]}</td>
               </tr>
             ))}
           </tbody>
@@ -407,7 +425,7 @@ export function AutomationScreen() {
               <td className="num">{r[3]}%</td>
               <td className="num">{r[4]}</td>
               <td><Spark data={r[5] as number[]} width={100} height={20} /></td>
-              <td className="mono" style={{ color: r[6] === 'OK' ? 'var(--sev-resolved)' : r[6] === 'DEGRADED' ? 'var(--sev-medium)' : 'var(--sev-critical)' }}>● {r[6]}</td>
+              <td className="mono" style={{ color: r[6] === 'OK' ? 'var(--sev-resolved)' : r[6] === 'DEGRADED' ? 'var(--sev-medium-text)' : 'var(--sev-critical)' }}>● {r[6]}</td>
             </tr>
           ))}
         </tbody>
@@ -453,7 +471,7 @@ export function MoneyScreen() {
                 <td className="num">{r[1]}</td>
                 <td className="mono">{r[2]}</td>
                 <td>{r[3]}</td>
-                <td className="num" style={{ color: parseInt(r[4]) > 85 ? 'var(--sev-critical)' : parseInt(r[4]) > 70 ? 'var(--sev-medium)' : 'var(--color-body)', fontWeight: 600 }}>{r[4]}</td>
+                <td className="num" style={{ color: parseInt(r[4]) > 85 ? 'var(--sev-critical)' : parseInt(r[4]) > 70 ? 'var(--sev-medium-text)' : 'var(--color-body)', fontWeight: 600 }}>{r[4]}</td>
                 <td className="mono">{r[5]}</td>
                 <td className="mono dim">{r[6]}</td>
               </tr>
@@ -502,7 +520,7 @@ function FraudLossChart() {
   return (
     <Panel title="Fraud loss trend · rolling 30 days" sub="actual vs prevented · $USD" flush>
       <div style={{ padding: 16 }}>
-        <svg viewBox="0 0 800 160" width="100%" height="160" preserveAspectRatio="none">
+        <svg viewBox="0 0 800 160" width="100%" height="160" preserveAspectRatio="none" role="img" aria-label="Bar chart of fraud loss over the last 30 days: actual loss averaging $142K per day versus prevented loss averaging $2.1M per day; prevention rate 93.7%.">
           {bars.map((bar, i) => (
             <g key={i}>
               <rect x={bar.x} y={160 - bar.prevented - bar.actual} width={(800 / 30) - 4} height={bar.prevented} fill="var(--sev-resolved)" opacity="0.7" />
@@ -563,8 +581,8 @@ export function FraudScreen() {
           <tbody>
             <tr><td className="mono">C-4421984</td><td>3 wire attempts, MFA bypass</td><td className="num" style={{color:'var(--sev-critical)',fontWeight:600}}>96</td></tr>
             <tr><td className="mono">C-4421912</td><td>Card spend velocity anomaly</td><td className="num" style={{color:'var(--sev-critical)',fontWeight:600}}>92</td></tr>
-            <tr><td className="mono">C-4421860</td><td>New device + new payee</td><td className="num" style={{color:'var(--sev-high)',fontWeight:600}}>88</td></tr>
-            <tr><td className="mono">C-4421802</td><td>SIM swap signal</td><td className="num" style={{color:'var(--sev-high)',fontWeight:600}}>84</td></tr>
+            <tr><td className="mono">C-4421860</td><td>New device + new payee</td><td className="num" style={{color:'var(--sev-high-text)',fontWeight:600}}>88</td></tr>
+            <tr><td className="mono">C-4421802</td><td>SIM swap signal</td><td className="num" style={{color:'var(--sev-high-text)',fontWeight:600}}>84</td></tr>
             <tr><td className="mono">C-4421798</td><td>Synthetic ID match</td><td className="num">78</td></tr>
             <tr><td className="mono">C-4421774</td><td>Mule path detected</td><td className="num">74</td></tr>
             <tr><td className="mono">C-4421702</td><td>Geo + device mismatch</td><td className="num">71</td></tr>

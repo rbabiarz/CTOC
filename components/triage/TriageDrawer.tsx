@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { Btn, Sev, Tag } from '@/components/ui';
 import { KILL_CHAIN_STAGES } from '@/lib/mock-data';
 import type { Alert } from '@/lib/types';
@@ -16,6 +16,39 @@ interface TriageDrawerProps {
 export function TriageDrawer({ alert, onClose }: TriageDrawerProps) {
   const [step, setStep] = useState(1);
   const [note, setNote] = useState('');
+  const drawerRef = useRef<HTMLElement>(null);
+
+  // Modal dialog focus management (WCAG 2.4.3, 2.1.2, 4.1.2):
+  // move focus into the dialog, trap Tab within it, restore focus to the trigger on close.
+  useEffect(() => {
+    const previouslyFocused = document.activeElement as HTMLElement | null;
+    drawerRef.current?.focus();
+
+    const node = drawerRef.current;
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (e.key !== 'Tab' || !node) return;
+      const focusable = Array.from(
+        node.querySelectorAll<HTMLElement>(
+          'button, [href], input, textarea, select, [tabindex]:not([tabindex="-1"])'
+        )
+      ).filter(el => !el.hasAttribute('disabled') && el.offsetParent !== null);
+      if (!focusable.length) return;
+      const first = focusable[0];
+      const last = focusable[focusable.length - 1];
+      if (e.shiftKey && document.activeElement === first) {
+        e.preventDefault();
+        last.focus();
+      } else if (!e.shiftKey && document.activeElement === last) {
+        e.preventDefault();
+        first.focus();
+      }
+    };
+    node?.addEventListener('keydown', onKeyDown);
+    return () => {
+      node?.removeEventListener('keydown', onKeyDown);
+      previouslyFocused?.focus?.();
+    };
+  }, []);
 
   if (!alert) return null;
 
@@ -24,12 +57,19 @@ export function TriageDrawer({ alert, onClose }: TriageDrawerProps) {
 
   return (
     <>
-      <div className="drawer-mask" onClick={onClose}></div>
-      <aside className="drawer">
+      <div className="drawer-mask" onClick={onClose} aria-hidden="true"></div>
+      <aside
+        className="drawer"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="drawer-title"
+        tabIndex={-1}
+        ref={drawerRef}
+      >
         <div className="drawer__head">
           <div>
             <div className="drawer__id">{alert.id} · {alert.src}</div>
-            <h2 className="drawer__title">{alert.rule}</h2>
+            <h2 className="drawer__title" id="drawer-title">{alert.rule}</h2>
             <div style={{ display: 'flex', gap: 6, marginTop: 6, alignItems: 'center' }}>
               <Sev level={alert.sev} />
               <Tag>STAGE {alert.stage}/7</Tag>
@@ -38,12 +78,12 @@ export function TriageDrawer({ alert, onClose }: TriageDrawerProps) {
               {alert.campaign && alert.campaign !== '—' && <Tag>{alert.campaign}</Tag>}
             </div>
           </div>
-          <Btn variant="ghost" size="xs" onClick={onClose} className="drawer__close">✕ CLOSE</Btn>
+          <Btn variant="ghost" size="xs" onClick={onClose} className="drawer__close"><span aria-hidden="true">✕</span> CLOSE</Btn>
         </div>
 
         <div className="drawer__body">
           <div className="drawer__section">
-            <div className="drawer__section-title">Triage workflow</div>
+            <h3 className="drawer__section-title">Triage workflow</h3>
             <div className="steps">
               {TRIAGE_STEPS.map((s, i) => (
                 <div key={s} className={`steps__step ${i < step ? 'done' : ''} ${i === step ? 'curr' : ''}`}>{s}</div>
@@ -58,7 +98,7 @@ export function TriageDrawer({ alert, onClose }: TriageDrawerProps) {
           </div>
 
           <div className="drawer__section">
-            <div className="drawer__section-title">Alert context</div>
+            <h3 className="drawer__section-title">Alert context</h3>
             <dl className="drawer__meta">
               <dt>Host</dt><dd>{alert.host}</dd>
               <dt>First seen</dt><dd>2026-05-26 {alert.t} UTC</dd>
@@ -72,7 +112,7 @@ export function TriageDrawer({ alert, onClose }: TriageDrawerProps) {
           </div>
 
           <div className="drawer__section">
-            <div className="drawer__section-title">Related signals (last 30m)</div>
+            <h3 className="drawer__section-title">Related signals (last 30m)</h3>
             <table className="tbl" style={{ fontSize: 11 }}>
               <thead>
                 <tr><th>Time</th><th>Source</th><th>Signal</th><th className="num">Score</th></tr>
@@ -88,7 +128,7 @@ export function TriageDrawer({ alert, onClose }: TriageDrawerProps) {
           </div>
 
           <div className="drawer__section">
-            <div className="drawer__section-title">Recommended playbooks</div>
+            <h3 className="drawer__section-title">Recommended playbooks</h3>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
               {[
                 { id: 'PB-CRED-12', name: 'Credential access — isolate + force rotation', conf: 0.91, mins: 3.2 },
@@ -106,10 +146,11 @@ export function TriageDrawer({ alert, onClose }: TriageDrawerProps) {
           </div>
 
           <div className="drawer__section">
-            <div className="drawer__section-title">Analyst notes</div>
+            <h3 className="drawer__section-title" id="analyst-notes-label">Analyst notes</h3>
             <textarea
               value={note}
               onChange={(e) => setNote(e.target.value)}
+              aria-labelledby="analyst-notes-label"
               placeholder="Add observation, IOC, escalation reason…"
               style={{
                 width: '100%',

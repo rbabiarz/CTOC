@@ -28,9 +28,11 @@ function KillChainStrip({ stages, activeIdx, onSelect }: KillChainStripProps) {
         const isHot = s.hot > 0;
         const barClass = s.hot >= 2 ? 'crit' : s.hot >= 1 ? 'high' : s.sig >= 6 ? 'med' : '';
         return (
-          <div
+          <button
+            type="button"
             key={s.idx}
             className={`kc__stage ${isActive ? 'is-active' : ''} ${isHot ? 'is-hot' : ''}`}
+            aria-pressed={isActive}
             onClick={() => onSelect(s.idx)}
           >
             <div className="kc__stage-idx">STAGE {s.idx.toString().padStart(2, '0')}</div>
@@ -50,7 +52,7 @@ function KillChainStrip({ stages, activeIdx, onSelect }: KillChainStripProps) {
               </div>
             </div>
             <div className={`kc__bar ${barClass}`}><span style={{ width: `${Math.round(s.conf * 100)}%` }}></span></div>
-          </div>
+          </button>
         );
       })}
     </div>
@@ -89,12 +91,32 @@ function AssetMap({ assets, edges, onSelect, highlightCampaign }: AssetMapProps)
           />
         );
       })}
-      {assets.map(a => (
-        <div key={a.id} className="map__node" style={{ left: `${a.x}%`, top: `${a.y}%` }} onClick={() => onSelect && onSelect(a)}>
-          <div className={`map__node-dot ${a.sev === 'critical' ? 'crit' : a.sev === 'high' ? 'high' : a.sev === 'resolved' ? 'ok' : ''}`}></div>
-          <div className="map__node-label">{a.label}</div>
-        </div>
-      ))}
+      {assets.map(a => {
+        const dotClass = a.sev === 'critical' ? 'crit' : a.sev === 'high' ? 'high' : a.sev === 'resolved' ? 'ok' : '';
+        const sevWord = a.sev === 'critical' ? 'critical' : a.sev === 'high' ? 'high' : a.sev === 'resolved' ? 'resolved' : 'normal';
+        const inner = (
+          <>
+            <div className={`map__node-dot ${dotClass}`} aria-hidden="true"></div>
+            <div className="map__node-label">{a.label}</div>
+          </>
+        );
+        return onSelect ? (
+          <button
+            key={a.id}
+            type="button"
+            className="map__node"
+            style={{ left: `${a.x}%`, top: `${a.y}%` }}
+            aria-label={`${a.label}, ${sevWord} severity asset — open detail`}
+            onClick={() => onSelect(a)}
+          >
+            {inner}
+          </button>
+        ) : (
+          <div key={a.id} className="map__node" style={{ left: `${a.x}%`, top: `${a.y}%` }}>
+            {inner}
+          </div>
+        );
+      })}
       <div style={{ position: 'absolute', bottom: 8, left: 8, display: 'flex', gap: 10, fontFamily: 'var(--mono)', fontSize: 10, color: 'var(--color-muted)' }}>
         <span style={{ display: 'flex', alignItems: 'center', gap: 4 }}><span style={{ width: 16, height: 2, background: 'var(--sev-critical)' }}></span>EXFIL PATH</span>
         <span style={{ display: 'flex', alignItems: 'center', gap: 4 }}><span style={{ width: 16, height: 2, background: 'var(--sev-high)' }}></span>ESCALATION</span>
@@ -118,20 +140,34 @@ function MitreGrid({ tactics, onCell }: MitreGridProps) {
       {tactics.map(col => (
         <div key={col.col} className="mitre__col">
           <div className="mitre__col-head">{col.col}</div>
-          {col.cells.map(c => (
-            <div
-              key={c.id}
-              className={`mitre__cell ${c.hit ? 'is-hit' : ''} ${c.crit ? 'is-crit' : ''}`}
-              onClick={() => onCell && onCell(c)}
-              title={`${c.id} · ${c.name}`}
-            >
-              <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                <span style={{ fontFamily: 'var(--mono)', fontSize: 9.5, color: 'var(--color-muted-soft)', marginRight: 4 }}>{c.id}</span>
-                {c.name}
-              </span>
-              <span className="count">{c.count || ''}</span>
-            </div>
-          ))}
+          {col.cells.map(c => {
+            const cls = `mitre__cell ${c.hit ? 'is-hit' : ''} ${c.crit ? 'is-crit' : ''}`;
+            const content = (
+              <>
+                <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                  <span style={{ fontFamily: 'var(--mono)', fontSize: 9.5, color: 'var(--color-muted-soft)', marginRight: 4 }}>{c.id}</span>
+                  {c.name}
+                </span>
+                <span className="count">{c.count || ''}</span>
+              </>
+            );
+            return c.hit ? (
+              <button
+                key={c.id}
+                type="button"
+                className={cls}
+                onClick={() => onCell && onCell(c)}
+                aria-label={`${c.id} ${c.name}${c.count ? `, ${c.count} detections` : ''} — open detail`}
+                title={`${c.id} · ${c.name}`}
+              >
+                {content}
+              </button>
+            ) : (
+              <div key={c.id} className={`${cls} mitre__cell--static`} title={`${c.id} · ${c.name}`}>
+                {content}
+              </div>
+            );
+          })}
         </div>
       ))}
     </div>
@@ -146,13 +182,22 @@ interface TimelineProps {
 export function Timeline({ events, onSelect }: TimelineProps) {
   return (
     <div className="timeline">
-      {events.map((e, i) => (
-        <div key={i} className={`timeline__event ${e.sev}`} onClick={() => onSelect && onSelect(e)} style={{ cursor: onSelect ? 'pointer' : 'default' }}>
-          <div className="timeline__time">{e.t} UTC</div>
-          <div className="timeline__title">{e.title}</div>
-          <div className="timeline__sub">{e.sub}</div>
-        </div>
-      ))}
+      {events.map((e, i) => {
+        const inner = (
+          <>
+            <div className="timeline__time">{e.t} UTC</div>
+            <div className="timeline__title">{e.title}</div>
+            <div className="timeline__sub">{e.sub}</div>
+          </>
+        );
+        return onSelect ? (
+          <button key={i} type="button" className={`timeline__event ${e.sev}`} onClick={() => onSelect(e)}>
+            {inner}
+          </button>
+        ) : (
+          <div key={i} className={`timeline__event ${e.sev}`}>{inner}</div>
+        );
+      })}
     </div>
   );
 }
@@ -240,7 +285,15 @@ export function KillChainScreen({ onOpenAlert, onOpenCampaign }: KillChainScreen
             </thead>
             <tbody>
               {CAMPAIGNS.map(c => (
-                <tr key={c.id} className={activeCampaign === c.id ? 'is-active' : ''} onClick={() => setActiveCampaign(c.id)}>
+                <tr
+                  key={c.id}
+                  className={activeCampaign === c.id ? 'is-active' : ''}
+                  onClick={() => setActiveCampaign(c.id)}
+                  tabIndex={0}
+                  aria-current={activeCampaign === c.id ? 'true' : undefined}
+                  aria-label={`Select campaign ${c.id}, ${c.name}`}
+                  onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setActiveCampaign(c.id); } }}
+                >
                   <td className="mono">{c.id}</td>
                   <td><span className="ink">{c.name}</span><div className="dim" style={{ fontSize: 10.5 }}>{c.desc}</div></td>
                   <td className="mono dim">{c.actor}</td>
@@ -270,7 +323,7 @@ export function KillChainScreen({ onOpenAlert, onOpenCampaign }: KillChainScreen
             />
           </div>
           <div style={{ padding: '8px 12px 10px', borderTop: '1px solid var(--hairline)', marginTop: 8, fontSize: 11.5 }}>
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '4px 12px' }}>
+            <div className="grid-2" style={{ gap: '4px 12px' }}>
               <div className="dim mono uppr">Entry vector</div><div className="mono ink">Phishing → macro · WS-441</div>
               <div className="dim mono uppr">Tactic</div><div className="mono ink">{campaignDetail.tactic} · Exfiltration</div>
               <div className="dim mono uppr">Started</div><div className="mono ink">{campaignDetail.started}</div>
@@ -303,14 +356,20 @@ export function KillChainScreen({ onOpenAlert, onOpenCampaign }: KillChainScreen
         } flush>
           <div className="feed" style={{ padding: '4px 8px' }}>
             {feedAlerts.map((a, i) => (
-              <div key={a.id} className={`feed__item ${i === 0 && tickId > 0 ? 'is-new' : ''}`} onClick={() => onOpenAlert && onOpenAlert(a)}>
+              <button
+                key={a.id}
+                type="button"
+                className={`feed__item ${i === 0 && tickId > 0 ? 'is-new' : ''}`}
+                aria-label={`${a.sev} alert: ${a.rule}, ${a.src} on ${a.host} — open triage`}
+                onClick={() => onOpenAlert && onOpenAlert(a)}
+              >
                 <div className="feed__time">{a.t}</div>
                 <div><Sev level={a.sev}>{a.sev[0].toUpperCase()}</Sev></div>
                 <div>
                   <div className="feed__msg ink">{a.rule}</div>
                   <div className="dim mono" style={{ fontSize: 10 }}>{a.src} · {a.host}</div>
                 </div>
-              </div>
+              </button>
             ))}
           </div>
         </Panel>
@@ -325,12 +384,12 @@ export function KillChainScreen({ onOpenAlert, onOpenCampaign }: KillChainScreen
           <BarRow label="Fraud/Acme" value={14} max={100} severity="low" suffix="%" />
 
           <div style={{ marginTop: 12, marginBottom: 6 }} className="dim mono uppr">Top IOCs · last hr</div>
-          <div className="kv">
+          <dl className="kv">
             <dt>IP</dt><dd>185.244.31.0/24</dd>
             <dt>DOMAIN</dt><dd>cdn-msft-update[.]com</dd>
             <dt>HASH</dt><dd>a1c4..f7e9 (loader.dll)</dd>
             <dt>CERT-SHA1</dt><dd>3c91..0b22 (revoked)</dd>
-          </div>
+          </dl>
         </Panel>
       </div>
     </div>

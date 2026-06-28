@@ -1,5 +1,6 @@
 'use client';
 
+import type { Ref } from 'react';
 import type { ScreenId } from '@/lib/types';
 
 interface NavItem {
@@ -36,30 +37,61 @@ const NAV: NavGroup[] = [
   ]},
 ];
 
+const DOT_LABEL: Record<string, string> = {
+  crit: 'Critical',
+  high: 'High',
+  med: 'Medium',
+  ok: 'Normal',
+};
+
 interface SidebarProps {
   active: ScreenId;
   onSelect: (id: ScreenId) => void;
+  open?: boolean;
+  /** Removed from tab order / a11y tree when the off-canvas drawer is closed on mobile. */
+  hidden?: boolean;
+  navRef?: Ref<HTMLElement>;
 }
 
-export function Sidebar({ active, onSelect }: SidebarProps) {
+export function Sidebar({ active, onSelect, open = false, hidden = false, navRef }: SidebarProps) {
   return (
-    <nav className="sidebar app__sidebar">
-      {NAV.map(group => (
-        <div key={group.group}>
-          <div className="sidebar__section">{group.group}</div>
-          {group.items.map(item => (
-            <div
-              key={item.id}
-              className={`sidebar__item ${active === item.id ? 'sidebar__item--active' : ''}`}
-              onClick={() => onSelect(item.id)}
-            >
-              <span className={`dot ${item.dot}`}></span>
-              <span style={{ flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{item.label}</span>
-              {item.count && <span className="count">{item.count}</span>}
-            </div>
-          ))}
-        </div>
-      ))}
+    <nav
+      id="primary-nav"
+      ref={navRef}
+      aria-label="Primary"
+      inert={hidden ? true : undefined}
+      className={`sidebar app__sidebar ${open ? 'app__sidebar--open' : ''}`}
+    >
+      {NAV.map(group => {
+        const headingId = `nav-group-${group.group.toLowerCase()}`;
+        return (
+          <div key={group.group}>
+            <div className="sidebar__section" id={headingId}>{group.group}</div>
+            <ul className="sidebar__list" aria-labelledby={headingId}>
+              {group.items.map(item => (
+                <li key={item.id}>
+                  <button
+                    type="button"
+                    className={`sidebar__item ${active === item.id ? 'sidebar__item--active' : ''}`}
+                    aria-current={active === item.id ? 'page' : undefined}
+                    onClick={() => onSelect(item.id)}
+                  >
+                    <span className={`dot ${item.dot}`} aria-hidden="true"></span>
+                    <span className="sidebar__item-label">{item.label}</span>
+                    <span className="sr-only">{DOT_LABEL[item.dot] ?? 'Normal'} priority</span>
+                    {item.count && (
+                      <span className="count">
+                        <span aria-hidden="true">{item.count}</span>
+                        <span className="sr-only">{item.count} open</span>
+                      </span>
+                    )}
+                  </button>
+                </li>
+              ))}
+            </ul>
+          </div>
+        );
+      })}
       <div style={{ padding: '14px 14px 6px', fontFamily: 'var(--mono)', fontSize: 10, color: 'var(--color-muted-soft)', textTransform: 'uppercase', letterSpacing: '0.08em' }}>SHIFT · A · DAY</div>
       <div style={{ padding: '0 14px 8px', fontFamily: 'var(--mono)', fontSize: 11, color: 'var(--color-body)' }}>
         M. Okafor · T2<br/>
