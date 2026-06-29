@@ -280,3 +280,11 @@ export function Feed({ alerts, onSelect, flagNew }: FeedProps) {
     </div>
   );
 }
+
+/* ===== Library primitives (greenfield — see separate files) ===== */
+export { Field, Input, Textarea, Select, Checkbox, Radio, Switch } from './forms';
+export { Tabs, Segmented } from './Tabs';
+export { Modal, Alert, Toast } from './overlays';
+export type { AlertTone } from './overlays';
+export { Breadcrumbs, Pagination } from './nav';
+export { Avatar, Empty, Spinner } from './feedback';

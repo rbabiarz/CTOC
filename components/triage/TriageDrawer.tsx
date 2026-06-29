@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useRef, useEffect } from 'react';
-import { Btn, Sev, Tag, StepProgress, Table } from '@/components/ui';
+import { Btn, Sev, Tag, StepProgress, Table, Textarea } from '@/components/ui';
 import { KILL_CHAIN_STAGES } from '@/lib/mock-data';
 import type { Alert } from '@/lib/types';
 
@@ -143,22 +143,11 @@ export function TriageDrawer({ alert, onClose }: TriageDrawerProps) {
 
           <div className="drawer__section">
             <h3 className="drawer__section-title" id="analyst-notes-label">Analyst notes</h3>
-            <textarea
+            <Textarea
               value={note}
               onChange={(e) => setNote(e.target.value)}
               aria-labelledby="analyst-notes-label"
               placeholder="Add observation, IOC, escalation reason…"
-              style={{
-                width: '100%',
-                minHeight: 56,
-                background: 'var(--panel-bg)',
-                border: '1px solid var(--hairline-strong)',
-                borderRadius: 3,
-                padding: 8,
-                fontFamily: 'var(--font-body)',
-                fontSize: 12,
-                resize: 'vertical',
-              }}
             />
           </div>
         </div>
