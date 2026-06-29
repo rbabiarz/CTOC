@@ -10,9 +10,11 @@ Newest at top. Design/UX-level notable changes (code-level history is in git).
     `KeyValueList`, `StepProgress`, `Table` + `ClickableRow`, `Feed`.
   - *Built* the missing library primitives (token-driven, accessible): `Field`, `Input`,
     `Textarea`, `Select`, `Checkbox`, `Radio`, `Switch`, `Tabs`, `Segmented`, `Modal`, `Alert`,
-    `Toast`, `Breadcrumbs`, `Pagination`, `Avatar`, `Empty`, `Spinner`.
-  - **Code Connect** mappings grew **5 → 18** in [`code-connect/`](../code-connect/). Remaining
-    Figma-only (no code yet): Combobox, Menu, Accordion, Slider.
+    `Toast`, `Breadcrumbs`, `Pagination`, `Avatar`, `Empty`, `Spinner`, `Combobox`, `Menu`,
+    `Accordion`, `Slider`.
+  - **Code Connect** mappings grew **5 → 22** in [`code-connect/`](../code-connect/) — every
+    reusable design-system component now maps to a real `components/ui` primitive (only the
+    App Shell chrome remains, which is a template composition, not a primitive).
 
 ## 2026-06-28
 - **HTML documentation portal** at [`design-system/site/index.html`](../design-system/site/index.html)

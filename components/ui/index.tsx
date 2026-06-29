@@ -288,3 +288,7 @@ export { Modal, Alert, Toast } from './overlays';
 export type { AlertTone } from './overlays';
 export { Breadcrumbs, Pagination } from './nav';
 export { Avatar, Empty, Spinner } from './feedback';
+export { Combobox } from './Combobox';
+export { Menu } from './Menu';
+export { Accordion } from './Accordion';
+export { Slider } from './Slider';

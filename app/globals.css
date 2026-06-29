@@ -1665,3 +1665,41 @@ button.timeline__event { cursor: pointer; }
   .spinner__ring { animation-duration: 1.6s; }
   .switch__cb, .switch__cb::after { transition: none; }
 }
+
+/* Combobox */
+.combobox { position: relative; width: 100%; }
+.combobox__input { padding-right: 28px; }
+.combobox__chev { position: absolute; right: 10px; top: 16px; transform: translateY(-50%); pointer-events: none; color: var(--color-muted); font-size: 10px; }
+.combobox__list { position: absolute; z-index: 30; top: calc(100% + 4px); left: 0; right: 0; max-height: 200px; overflow-y: auto; margin: 0; padding: 4px; list-style: none; background: var(--panel-bg); border: 1px solid var(--hairline); border-radius: var(--rounded-sm); box-shadow: var(--shadow-lg); }
+.combobox__opt { padding: 6px 8px; border-radius: var(--rounded-xs); font-size: 13px; color: var(--color-body); cursor: pointer; }
+.combobox__opt.is-active { background: var(--color-surface-strong); }
+.combobox__opt.is-selected { color: var(--color-ink); font-weight: 500; }
+
+/* Menu */
+.menu { position: relative; display: inline-block; }
+.menu__trigger { appearance: none; display: inline-flex; align-items: center; gap: 6px; background: var(--panel-bg); border: 1px solid var(--hairline-strong); border-radius: var(--rounded-xs); cursor: pointer; font-family: var(--font-mono); font-size: 11px; text-transform: uppercase; letter-spacing: 0.02em; color: var(--color-body); padding: 5px 10px; min-height: 28px; }
+.menu__trigger:hover { border-color: var(--color-muted); color: var(--color-ink); }
+.menu__list { position: absolute; z-index: 30; top: calc(100% + 4px); left: 0; min-width: 180px; margin: 0; padding: 4px; list-style: none; background: var(--panel-bg); border: 1px solid var(--hairline); border-radius: var(--rounded-sm); box-shadow: var(--shadow-lg); }
+.menu__item { display: block; width: 100%; text-align: left; appearance: none; background: none; border: none; cursor: pointer; font-family: var(--font-body); font-size: 13px; color: var(--color-body); padding: 7px 10px; border-radius: var(--rounded-xs); }
+.menu__item:hover:not(:disabled) { background: var(--color-surface-strong); color: var(--color-ink); }
+.menu__item--danger { color: var(--sev-critical); }
+.menu__item:disabled { opacity: 0.5; cursor: not-allowed; }
+
+/* Accordion */
+.accordion { border: 1px solid var(--hairline); border-radius: var(--rounded-sm); overflow: hidden; }
+.accordion__item + .accordion__item { border-top: 1px solid var(--hairline); }
+.accordion__heading { margin: 0; }
+.accordion__trigger { display: flex; align-items: center; justify-content: space-between; gap: var(--spacing-md); width: 100%; text-align: left; appearance: none; background: var(--panel-bg); border: none; cursor: pointer; font-family: var(--font-display); font-size: 13px; font-weight: 500; color: var(--color-ink); padding: 12px 14px; }
+.accordion__trigger:hover { background: var(--panel-bg-strong); }
+.accordion__chev { color: var(--color-muted); font-size: 15px; line-height: 1; flex: none; }
+.accordion__panel { padding: 0 14px 14px; font-size: 13px; color: var(--color-body); }
+
+/* Slider */
+.slider { display: flex; flex-direction: column; gap: var(--spacing-sm); }
+.slider__head { display: flex; align-items: center; justify-content: space-between; }
+.slider__label { font-family: var(--font-mono); font-size: 10px; text-transform: uppercase; letter-spacing: 0.06em; color: var(--color-muted); }
+.slider__value { font-family: var(--font-mono); font-size: 12px; color: var(--color-ink); font-variant-numeric: tabular-nums; }
+.slider__range { -webkit-appearance: none; appearance: none; width: 100%; height: 4px; border-radius: var(--rounded-pill); background: var(--color-surface-strong); cursor: pointer; }
+.slider__range::-webkit-slider-thumb { -webkit-appearance: none; appearance: none; width: 16px; height: 16px; border-radius: 50%; background: var(--color-ink); border: 2px solid var(--panel-bg); box-shadow: var(--shadow-xs); cursor: pointer; }
+.slider__range::-moz-range-thumb { width: 16px; height: 16px; border-radius: 50%; background: var(--color-ink); border: 2px solid var(--panel-bg); cursor: pointer; }
+.slider__range:disabled { opacity: 0.5; cursor: not-allowed; }

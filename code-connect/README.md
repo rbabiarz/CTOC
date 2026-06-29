@@ -28,8 +28,12 @@ These are parser-based `figma.connect()` files (`@figma/code-connect`), publishe
 | Table Row | `36-45` | `ClickableRow` | `State→active` |
 | Breadcrumb Item | `49-10` | `Breadcrumbs` | composition |
 | Page Item | `52-12` | `Pagination` | composition |
+| Combobox | `34-15` | `Combobox` | `State→disabled` |
+| Menu Item | `48-18` | `Menu` | composition |
+| Accordion Item | `50-16` | `Accordion` | composition |
+| Slider | `58-30` | `Slider` | `State→disabled` |
 
-**18 components mapped** (up from 5 — see [docs/changelog.md](../docs/changelog.md)).
+**22 components mapped** (up from 5 — see [docs/changelog.md](../docs/changelog.md)).
 
 ## Prerequisites (⚠ not met on the current plan)
 
@@ -58,9 +62,10 @@ so they are intentionally *not* Code-Connected (no single Figma node represents 
 `KeyValueList`, `StepProgress`, `Table` (wrapper — its row is mapped via `ClickableRow`),
 `Feed`, `Textarea` (covered by the Input component), `Segmented`, `Modal`, `Empty`, `Spinner`.
 
-**Figma components with no code component yet** — build the primitive in `components/ui`, then
-add a `*.figma.tsx` here: `Combobox` (`34-15`), `Menu Item` (`48-18`), `Accordion Item`
-(`50-16`), `Slider` (`58-30`).
+**Figma components with no code component yet** — none. Every reusable design-system component
+now maps to a `components/ui` primitive. The only unmapped node is `App Shell` (`77-2`), the
+application chrome (topbar + sidebar) built in `components/dashboard/` as `Dashboard` /
+`Sidebar` / `Topbar` — a template composition, not a reusable primitive.
 
 ## Build note
 
