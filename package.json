@@ -8,7 +8,9 @@
     "build:pages": "GITHUB_PAGES=true next build",
     "validate:theme": "node scripts/validate-theme-contrast.mjs",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "code-connect:check": "figma connect parse",
+    "code-connect:publish": "figma connect publish"
   },
   "dependencies": {
     "next": "^15.3.3",
@@ -16,6 +18,7 @@
     "react-dom": "^19.1.0"
   },
   "devDependencies": {
+    "@figma/code-connect": "^1.3.2",
     "@tailwindcss/postcss": "^4.1.8",
     "@types/node": "^22.15.29",
     "@types/react": "^19.1.6",
