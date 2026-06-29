@@ -6,6 +6,8 @@
     "dev": "next dev --turbopack",
     "build": "next build",
     "build:pages": "GITHUB_PAGES=true next build",
+    "postbuild": "mkdir -p out/ds && cp design-system/site/index.html out/ds/index.html",
+    "postbuild:pages": "mkdir -p out/ds && cp design-system/site/index.html out/ds/index.html",
     "validate:theme": "node scripts/validate-theme-contrast.mjs",
     "start": "next start",
     "lint": "next lint",

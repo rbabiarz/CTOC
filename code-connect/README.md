@@ -32,8 +32,10 @@ These are parser-based `figma.connect()` files (`@figma/code-connect`), publishe
 | Menu Item | `48-18` | `Menu` | composition |
 | Accordion Item | `50-16` | `Accordion` | composition |
 | Slider | `58-30` | `Slider` | `State→disabled` |
+| App Shell | `77-2` | `Dashboard` | composition (Topbar + Sidebar chrome) |
 
-**22 components mapped** (up from 5 — see [docs/changelog.md](../docs/changelog.md)).
+**23 components mapped** (up from 5 — see [docs/changelog.md](../docs/changelog.md)). `App Shell` maps
+to `components/dashboard/Dashboard`; all others ship from `components/ui`.
 
 ## Prerequisites (⚠ not met on the current plan)
 
@@ -62,10 +64,8 @@ so they are intentionally *not* Code-Connected (no single Figma node represents 
 `KeyValueList`, `StepProgress`, `Table` (wrapper — its row is mapped via `ClickableRow`),
 `Feed`, `Textarea` (covered by the Input component), `Segmented`, `Modal`, `Empty`, `Spinner`.
 
-**Figma components with no code component yet** — none. Every reusable design-system component
-now maps to a `components/ui` primitive. The only unmapped node is `App Shell` (`77-2`), the
-application chrome (topbar + sidebar) built in `components/dashboard/` as `Dashboard` /
-`Sidebar` / `Topbar` — a template composition, not a reusable primitive.
+**Figma components with no code component yet** — none. Every design-system component now maps
+to code, including the `App Shell` chrome (→ `Dashboard`, which composes `Sidebar` + `Topbar`).
 
 ## Build note
 
