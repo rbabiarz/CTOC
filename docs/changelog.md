@@ -15,6 +15,8 @@ Newest at top. Design/UX-level notable changes (code-level history is in git).
   - **Code Connect** mappings grew **5 → 22** in [`code-connect/`](../code-connect/) — every
     reusable design-system component now maps to a real `components/ui` primitive (only the
     App Shell chrome remains, which is a template composition, not a primitive).
+  - **Docs portal** component gallery expanded to all 22 primitives with live examples in
+    [`design-system/site/index.html`](../design-system/site/index.html).
 
 ## 2026-06-28
 - **HTML documentation portal** at [`design-system/site/index.html`](../design-system/site/index.html)

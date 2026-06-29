@@ -1,0 +1,902 @@
+<!doctype html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>CTOC Design System — Documentation</title>
+<meta name="description" content="The token-driven, severity-led, accessibility-first design system behind CTOC Command." />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500&family=Inter:wght@500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<style>
+/* ============================================================
+   TOKENS — mirror of app/globals.css (runtime source of truth)
+   ============================================================ */
+:root{
+  --font-display:'Inter',system-ui,sans-serif;
+  --font-body:'DM Sans',system-ui,sans-serif;
+  --font-mono:'JetBrains Mono',ui-monospace,monospace;
+
+  --canvas:#fffcf5; --panel:#fffefa; --panel-strong:#fbf6e9;
+  --surface-soft:#faf5e8; --surface-card:#f5f0e0; --surface-strong:#ebe6d6;
+  --ink:#0a0a0a; --body:#2a2a2a; --muted:#595959; --muted-soft:#6a6a6a;
+  --hairline:#e6dfc8; --hairline-strong:#d6cfb5; --row-hover:#faf3df;
+  --accent:#0a0a0a; --on-accent:#ffffff;
+
+  --sev-critical:#d81b2a; --sev-critical-solid:#d81b2a; --on-sev-critical:#ffffff; --sev-critical-bg:#fde2e2;
+  --sev-high:#e64d3c; --sev-high-text:#a3331f; --sev-high-bg:#fbe5e0;
+  --sev-medium:#d4a036; --sev-medium-text:#8a5e0e; --sev-medium-bg:#fbf0d4;
+  --sev-low:#1570ef; --sev-low-text:#1e40af; --sev-low-bg:#d9e8fc;
+  --sev-resolved:#166534; --sev-resolved-bg:#d1fae5;
+
+  --sp-xs:4px; --sp-sm:8px; --sp-md:12px; --sp-lg:16px; --sp-xl:20px; --sp-2xl:24px; --sp-3xl:32px;
+  --r-xs:4px; --r-sm:6px; --r-md:8px; --r-lg:12px;
+  --shadow-sm:0 1px 3px rgba(16,24,40,.1),0 1px 2px rgba(16,24,40,.06);
+  --shadow-md:0 4px 8px -2px rgba(16,24,40,.1),0 2px 4px -2px rgba(16,24,40,.06);
+  --shadow-lg:0 12px 16px -4px rgba(16,24,40,.08),0 4px 6px -2px rgba(16,24,40,.03);
+}
+[data-theme="dark"]{
+  --canvas:#141312; --panel:#1a1917; --panel-strong:#222019;
+  --surface-soft:#1a1917; --surface-card:#222019; --surface-strong:#2a2724;
+  --ink:#f5f2eb; --body:#d4cfc4; --muted:#b8b0a4; --muted-soft:#9a9288;
+  --hairline:#353029; --hairline-strong:#454038; --row-hover:#222019;
+  --accent:#f5f2eb; --on-accent:#141312;
+  --sev-critical:#f87171; --sev-critical-solid:#d81b2a; --sev-critical-bg:#3f1515;
+  --sev-high:#fb7185; --sev-high-text:#fecaca; --sev-high-bg:#3d1812;
+  --sev-medium:#fbbf24; --sev-medium-text:#fde68a; --sev-medium-bg:#3d3010;
+  --sev-low:#60a5fa; --sev-low-text:#93c5fd; --sev-low-bg:#1e3050;
+  --sev-resolved:#4ade80; --sev-resolved-bg:#14532d;
+  --shadow-sm:0 1px 3px rgba(0,0,0,.4); --shadow-md:0 4px 10px rgba(0,0,0,.45); --shadow-lg:0 16px 28px rgba(0,0,0,.5);
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{
+  background:var(--canvas); color:var(--body);
+  font-family:var(--font-body); font-size:14px; line-height:1.55;
+  -webkit-font-smoothing:antialiased;
+  transition:background-color .2s ease,color .2s ease;
+}
+a{color:var(--ink); text-decoration:none}
+a:hover{text-decoration:underline}
+h1,h2,h3,h4{font-family:var(--font-display); color:var(--ink); letter-spacing:-.01em; margin:0}
+code,.mono{font-family:var(--font-mono)}
+:focus-visible{outline:2px solid var(--ink); outline-offset:2px; border-radius:2px}
+
+/* skip link */
+.skip{position:absolute; left:8px; top:-48px; z-index:90; background:var(--accent); color:var(--on-accent);
+  padding:8px 14px; border-radius:var(--r-xs); font-family:var(--font-mono); font-size:12px; transition:top .16s ease}
+.skip:focus{top:8px; text-decoration:none}
+
+/* layout */
+.app{display:grid; grid-template-columns:248px 1fr; grid-template-rows:52px 1fr; min-height:100vh; min-height:100dvh}
+.topbar{grid-column:1/3; display:flex; align-items:center; gap:12px; padding:0 16px;
+  background:var(--panel); border-bottom:1px solid var(--hairline); position:sticky; top:0; z-index:40}
+.brand{display:flex; align-items:center; gap:8px; font-family:var(--font-mono); font-weight:500; font-size:13px; color:var(--ink); letter-spacing:.02em}
+.brand-mark{width:24px; height:24px; border-radius:var(--r-xs); background:var(--accent); color:var(--on-accent);
+  display:grid; place-items:center; font-family:var(--font-display); font-weight:600; font-size:13px}
+.ver{font-family:var(--font-mono); font-size:10px; color:var(--muted-soft); border:1px solid var(--hairline-strong); padding:2px 6px; border-radius:999px; letter-spacing:.06em}
+.spacer{flex:1}
+.tbtn{font-family:var(--font-mono); font-size:11px; color:var(--body); background:var(--panel);
+  border:1px solid var(--hairline-strong); border-radius:var(--r-xs); padding:6px 10px; cursor:pointer; min-height:30px}
+.tbtn:hover{background:var(--surface-strong)}
+
+.sidenav{grid-row:2/3; border-right:1px solid var(--hairline); background:var(--panel);
+  overflow-y:auto; padding:14px 0 40px; position:sticky; top:52px; height:calc(100dvh - 52px)}
+.navgrp{font-family:var(--font-mono); font-size:10px; letter-spacing:.1em; text-transform:uppercase;
+  color:var(--muted-soft); padding:14px 18px 4px}
+.navlink{display:flex; align-items:center; gap:9px; width:100%; text-align:left; background:none; border:0;
+  border-left:2px solid transparent; padding:7px 18px; font-family:var(--font-body); font-size:13.5px; color:var(--body); cursor:pointer}
+.navlink:hover{background:var(--surface-soft); text-decoration:none}
+.navlink[aria-current="page"]{background:var(--surface-card); border-left-color:var(--ink); color:var(--ink); font-weight:500}
+
+main{grid-row:2/3; overflow-x:hidden; padding:32px 40px 80px; max-width:1040px}
+.section{display:none}
+.section.is-active{display:block; animation:fade .2s ease}
+@keyframes fade{from{opacity:0; transform:translateY(4px)}to{opacity:1; transform:none}}
+.eyebrow{font-family:var(--font-mono); font-size:11px; letter-spacing:.1em; text-transform:uppercase; color:var(--muted-soft); margin:0 0 6px}
+.h1{font-size:34px; font-weight:600; letter-spacing:-.02em}
+.lead{font-size:16px; color:var(--muted); max-width:68ch; margin:10px 0 0; line-height:1.6}
+.h2{font-size:20px; font-weight:600; margin:40px 0 4px; padding-top:16px}
+.h3{font-size:15px; font-weight:600; margin:24px 0 8px; color:var(--ink)}
+p{max-width:72ch}
+.muted{color:var(--muted)}
+hr.div{border:0; border-top:1px solid var(--hairline); margin:28px 0}
+
+/* generic blocks */
+.panel{background:var(--panel); border:1px solid var(--hairline); border-radius:var(--r-md); overflow:hidden}
+.panel__head{display:flex; align-items:center; gap:8px; padding:10px 14px; background:var(--panel-strong); border-bottom:1px solid var(--hairline)}
+.panel__title{font-family:var(--font-display); font-weight:600; font-size:12px; text-transform:uppercase; letter-spacing:.04em; color:var(--ink)}
+.panel__body{padding:16px}
+.demo{display:flex; flex-wrap:wrap; gap:12px; align-items:center; padding:20px; background:var(--panel);
+  border:1px solid var(--hairline); border-radius:var(--r-md)}
+.grid{display:grid; gap:12px}
+.cards-3{grid-template-columns:repeat(auto-fit,minmax(220px,1fr))}
+.card{background:var(--panel); border:1px solid var(--hairline); border-radius:var(--r-md); padding:16px}
+.card h4{font-size:13px; margin:0 0 4px}
+.card p{font-size:12.5px; color:var(--muted); margin:0; max-width:none}
+.stat{font-family:var(--font-display); font-weight:600; font-size:28px; color:var(--ink); letter-spacing:-.01em}
+.statgrid{display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); gap:1px; background:var(--hairline); border:1px solid var(--hairline); border-radius:var(--r-md); overflow:hidden}
+.statgrid>div{background:var(--panel); padding:14px 16px}
+.lbl{font-family:var(--font-mono); font-size:10px; letter-spacing:.06em; text-transform:uppercase; color:var(--muted-soft)}
+
+/* tables */
+table.tbl{width:100%; border-collapse:collapse; font-size:13px}
+table.tbl th{font-family:var(--font-mono); font-size:10px; letter-spacing:.06em; text-transform:uppercase; color:var(--muted-soft);
+  text-align:left; padding:8px 12px; border-bottom:1px solid var(--hairline); background:var(--panel-strong)}
+table.tbl td{padding:8px 12px; border-bottom:1px solid var(--hairline); vertical-align:top}
+table.tbl td.mono{font-family:var(--font-mono); font-size:12px}
+.tbl-wrap{border:1px solid var(--hairline); border-radius:var(--r-md); overflow:hidden}
+
+/* components — live */
+.btn{display:inline-flex; align-items:center; gap:6px; padding:5px 10px; min-height:24px; border-radius:var(--r-xs);
+  font-family:var(--font-mono); font-size:11px; text-transform:uppercase; letter-spacing:.02em; cursor:pointer;
+  background:var(--panel); border:1px solid var(--hairline-strong); color:var(--body)}
+.btn--primary{background:var(--accent); color:var(--on-accent); border-color:var(--accent)}
+.btn--danger{background:var(--sev-critical-solid); color:var(--on-sev-critical); border-color:var(--sev-critical-solid)}
+.btn--ghost{background:transparent; border-color:transparent}
+.btn[disabled]{opacity:.5; cursor:not-allowed}
+
+.sev{display:inline-flex; align-items:center; gap:5px; padding:3px 8px; border-radius:999px;
+  font-family:var(--font-mono); font-size:10px; font-weight:500; letter-spacing:.04em}
+.sev .sq{width:8px; height:8px; border-radius:2px}
+.sev--critical{background:var(--sev-critical-solid); color:var(--on-sev-critical)} .sev--critical .sq{background:var(--on-sev-critical)}
+.sev--high{background:var(--sev-high-bg); color:var(--sev-high-text)} .sev--high .sq{background:var(--sev-high)}
+.sev--medium{background:var(--sev-medium-bg); color:var(--sev-medium-text)} .sev--medium .sq{background:var(--sev-medium)}
+.sev--low{background:var(--sev-low-bg); color:var(--sev-low-text)} .sev--low .sq{background:var(--sev-low)}
+.sev--resolved{background:var(--sev-resolved-bg); color:var(--sev-resolved)} .sev--resolved .sq{background:var(--sev-resolved)}
+
+.statusdot{display:inline-flex; align-items:center; gap:5px; font-family:var(--font-mono); font-size:10.5px; font-weight:500; letter-spacing:.04em}
+.statusdot .d{width:7px; height:7px; border-radius:50%}
+.tag{display:inline-flex; padding:2px 6px; border:1px solid var(--hairline-strong); border-radius:var(--r-xs);
+  font-family:var(--font-mono); font-size:10.5px; color:var(--muted); background:var(--panel)}
+.tag--active{background:var(--accent); color:var(--on-accent); border-color:var(--accent)}
+
+.kpi{background:var(--panel); border:1px solid var(--hairline); border-radius:var(--r-md); padding:12px 14px; min-width:200px}
+.kpi--crit{background:var(--sev-critical-bg)}
+.kpi .v{font-family:var(--font-display); font-weight:600; font-size:26px; color:var(--ink)}
+.kpi--crit .v{color:var(--sev-critical)}
+.kpi .f{font-family:var(--font-mono); font-size:9.5px; color:var(--muted-soft); letter-spacing:.04em}
+
+.alert{display:flex; align-items:flex-start; gap:8px; padding:10px 12px; border-radius:var(--r-sm); border:1px solid var(--hairline); background:var(--panel-strong); font-size:12.5px; color:var(--body)}
+.alert__dot{width:9px; height:9px; border-radius:2px; flex:none; margin-top:3px; background:var(--muted)}
+.alert__content{flex:1; min-width:0}
+.alert__title{font-weight:600; color:var(--ink); margin-bottom:2px}
+.alert__close{appearance:none; background:none; border:none; cursor:pointer; color:var(--muted); font-size:11px; min-width:24px; min-height:24px; border-radius:var(--r-xs); flex:none}
+.alert--critical{background:var(--sev-critical-bg); border-color:var(--sev-critical)} .alert--critical .alert__dot{background:var(--sev-critical)}
+.alert--warning{background:var(--sev-medium-bg); border-color:var(--sev-medium)} .alert--warning .alert__dot{background:var(--sev-medium)}
+.alert--success{background:var(--sev-resolved-bg); border-color:var(--sev-resolved)} .alert--success .alert__dot{background:var(--sev-resolved)}
+.alert--info{background:var(--sev-low-bg); border-color:var(--sev-low)} .alert--info .alert__dot{background:var(--sev-low)}
+.alert--neutral{background:var(--panel-strong); border-color:var(--hairline)} .alert--neutral .alert__dot{background:var(--muted)}
+.toast{box-shadow:var(--shadow-lg); border-radius:var(--r-md)}
+
+/* swatches */
+.swatches{display:grid; grid-template-columns:repeat(auto-fit,minmax(130px,1fr)); gap:10px}
+.sw{border:1px solid var(--hairline); border-radius:var(--r-sm); overflow:hidden}
+.sw .chip{height:48px} .sw .meta{padding:6px 8px} .sw .nm{font-family:var(--font-mono); font-size:10px; color:var(--body)} .sw .hex{font-family:var(--font-mono); font-size:9px; color:var(--muted-soft)}
+.sevcards{display:grid; grid-template-columns:repeat(auto-fit,minmax(180px,1fr)); gap:12px}
+.sevcard{border:1px solid var(--hairline); border-radius:var(--r-md); padding:14px; background:var(--panel); display:flex; flex-direction:column; gap:8px}
+.sevcard .bar{height:26px; border-radius:var(--r-xs)}
+
+.type-row{padding:10px 0; border-bottom:1px dashed var(--hairline)}
+.type-row .spec{font-family:var(--font-mono); font-size:9.5px; color:var(--muted-soft); margin-top:2px}
+
+.spacing-row{display:flex; align-items:center; gap:12px; margin:5px 0}
+.spacing-row .bar{height:14px; border-radius:2px; background:var(--accent)}
+.radius-chip{display:inline-flex; flex-direction:column; gap:6px; align-items:center; width:74px}
+.radius-chip .sq{width:56px; height:56px; background:var(--surface-strong); border:1px solid var(--hairline)}
+.elev{display:grid; grid-template-columns:repeat(3,1fr); gap:16px}
+.elev .e{background:var(--panel); border-radius:var(--r-md); padding:14px; font-family:var(--font-mono); font-size:11px; color:var(--muted)}
+
+.callout{border:1px solid var(--hairline); border-radius:var(--r-md); background:var(--panel-strong); padding:12px 14px; font-size:13px; color:var(--body)}
+.callout .lbl{display:block; margin-bottom:4px; color:var(--sev-critical)}
+ul.tight{margin:8px 0; padding-left:18px} ul.tight li{margin:4px 0; max-width:72ch}
+.kbd{font-family:var(--font-mono); font-size:11px; background:var(--surface-strong); border:1px solid var(--hairline-strong); border-radius:3px; padding:1px 5px}
+
+/* ── Library primitives: forms · nav · feedback · data ── */
+.input{width:100%; font-family:var(--font-body); font-size:13px; color:var(--ink); background:var(--panel); border:1px solid var(--hairline-strong); border-radius:var(--r-xs); padding:7px 10px; min-height:32px}
+.input::placeholder{color:var(--muted-soft)}
+.input:hover{border-color:var(--muted)}
+.input--invalid{border-color:var(--sev-critical)}
+.textarea{min-height:64px; resize:vertical; line-height:1.5}
+.select{position:relative; display:inline-flex; width:100%}
+.select__el{width:100%; appearance:none; -webkit-appearance:none; font-family:var(--font-body); font-size:13px; color:var(--ink); background:var(--panel); border:1px solid var(--hairline-strong); border-radius:var(--r-xs); padding:7px 28px 7px 10px; min-height:32px; cursor:pointer}
+.select__chev{position:absolute; right:10px; top:50%; transform:translateY(-50%); pointer-events:none; color:var(--muted); font-size:10px}
+.choice{display:inline-flex; align-items:center; gap:var(--sp-sm); cursor:pointer; font-size:13px; color:var(--body)}
+.choice__cb{appearance:none; -webkit-appearance:none; margin:0; flex:none; width:16px; height:16px; position:relative; cursor:pointer; border:1px solid var(--hairline-strong); border-radius:2px; background:var(--panel)}
+.choice__cb--radio{border-radius:50%}
+.choice__cb:checked{background:var(--accent); border-color:var(--accent)}
+.choice__cb:checked::after{content:'✓'; position:absolute; inset:0; display:flex; align-items:center; justify-content:center; color:var(--on-accent); font-size:11px; line-height:1}
+.choice__cb--radio:checked::after{content:''; width:6px; height:6px; border-radius:50%; background:var(--on-accent); inset:0; margin:auto}
+.switch{display:inline-flex; align-items:center; gap:var(--sp-sm); cursor:pointer; font-size:13px; color:var(--body)}
+.switch__cb{appearance:none; -webkit-appearance:none; margin:0; flex:none; width:32px; height:18px; position:relative; cursor:pointer; border:1px solid var(--hairline-strong); border-radius:999px; background:var(--surface-strong); transition:background .15s ease}
+.switch__cb::after{content:''; position:absolute; top:1px; left:1px; width:14px; height:14px; border-radius:50%; background:var(--panel); box-shadow:var(--shadow-sm); transition:transform .15s ease}
+.switch__cb:checked{background:var(--accent); border-color:var(--accent)}
+.switch__cb:checked::after{transform:translateX(14px); background:var(--on-accent)}
+.tabs{display:flex; gap:var(--sp-lg); border-bottom:1px solid var(--hairline)}
+.tabs__tab{appearance:none; background:none; border:none; cursor:pointer; font-family:var(--font-display); font-size:13px; font-weight:500; color:var(--muted); padding:8px 2px; margin-bottom:-1px; border-bottom:2px solid transparent}
+.tabs__tab.is-active{color:var(--ink); border-bottom-color:var(--ink)}
+.segmented{display:inline-flex; gap:2px; padding:2px; background:var(--surface-card); border:1px solid var(--hairline); border-radius:var(--r-sm)}
+.segmented__btn{appearance:none; background:none; border:none; cursor:pointer; font-family:var(--font-mono); font-size:10.5px; letter-spacing:.04em; text-transform:uppercase; color:var(--muted); padding:4px 10px; border-radius:var(--r-xs); min-height:24px}
+.segmented__btn.is-active{background:var(--accent); color:var(--on-accent)}
+.modal-demo{width:100%; max-width:420px; display:flex; flex-direction:column; overflow:hidden; background:var(--panel); border:1px solid var(--hairline); border-radius:var(--r-lg); box-shadow:var(--shadow-lg)}
+.modal__head{display:flex; align-items:center; justify-content:space-between; gap:var(--sp-md); padding:14px 16px; border-bottom:1px solid var(--hairline); background:var(--panel-strong)}
+.modal__title{font-family:var(--font-display); font-size:15px; font-weight:600; color:var(--ink)}
+.modal__close{appearance:none; background:none; border:none; cursor:pointer; color:var(--muted); font-size:13px; min-width:24px; min-height:24px; border-radius:var(--r-xs)}
+.modal__body{padding:16px; font-size:13px; color:var(--body)}
+.modal__foot{display:flex; align-items:center; justify-content:flex-end; gap:var(--sp-sm); padding:12px 16px; border-top:1px solid var(--hairline); background:var(--panel-strong)}
+.breadcrumbs__list{list-style:none; display:flex; align-items:center; flex-wrap:wrap; gap:var(--sp-xs); margin:0; padding:0; font-family:var(--font-mono); font-size:11px}
+.breadcrumbs__item{display:inline-flex; align-items:center; gap:var(--sp-xs); color:var(--muted)}
+.breadcrumbs__item [aria-current="page"]{color:var(--ink); font-weight:500}
+.breadcrumbs__sep{color:var(--muted-soft)}
+.pagination{display:inline-flex; align-items:center; gap:2px}
+.pagination__btn{appearance:none; background:var(--panel); border:1px solid var(--hairline); cursor:pointer; font-family:var(--font-mono); font-size:11px; color:var(--body); min-width:28px; min-height:28px; padding:0 6px; border-radius:var(--r-xs)}
+.pagination__btn.is-active{background:var(--accent); color:var(--on-accent); border-color:var(--accent)}
+.pagination__gap{padding:0 4px; color:var(--muted-soft); font-family:var(--font-mono); font-size:11px}
+.avatar{display:inline-flex; align-items:center; justify-content:center; flex:none; border-radius:50%; background:var(--surface-strong); color:var(--ink); font-family:var(--font-mono); font-weight:500}
+.avatar--sm{width:22px; height:22px; font-size:9px}
+.avatar--md{width:30px; height:30px; font-size:11px}
+.avatar--lg{width:40px; height:40px; font-size:14px}
+.empty{display:flex; flex-direction:column; align-items:center; text-align:center; gap:var(--sp-sm); padding:var(--sp-3xl) var(--sp-lg); color:var(--muted)}
+.empty__title{font-family:var(--font-display); font-size:14px; font-weight:600; color:var(--ink)}
+.empty__msg{font-size:12.5px; color:var(--muted); max-width:44ch}
+.spinner__ring{display:inline-block; width:18px; height:18px; border:2px solid var(--hairline-strong); border-top-color:var(--ink); border-radius:50%; animation:spin .7s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.combobox{position:relative; width:100%}
+.combobox__input{padding-right:28px}
+.combobox__chev{position:absolute; right:10px; top:16px; transform:translateY(-50%); pointer-events:none; color:var(--muted); font-size:10px}
+.combobox__list{margin:4px 0 0; padding:4px; list-style:none; background:var(--panel); border:1px solid var(--hairline); border-radius:var(--r-sm); box-shadow:var(--shadow-lg)}
+.combobox__opt{padding:6px 8px; border-radius:var(--r-xs); font-size:13px; color:var(--body); cursor:pointer}
+.combobox__opt.is-active{background:var(--surface-strong)}
+.combobox__opt.is-selected{color:var(--ink); font-weight:500}
+.menu{position:relative; display:inline-block}
+.menu__trigger{appearance:none; display:inline-flex; align-items:center; gap:6px; background:var(--panel); border:1px solid var(--hairline-strong); border-radius:var(--r-xs); cursor:pointer; font-family:var(--font-mono); font-size:11px; text-transform:uppercase; letter-spacing:.02em; color:var(--body); padding:5px 10px; min-height:28px}
+.menu__list{margin:4px 0 0; padding:4px; list-style:none; min-width:180px; background:var(--panel); border:1px solid var(--hairline); border-radius:var(--r-sm); box-shadow:var(--shadow-lg)}
+.menu__item{display:block; width:100%; text-align:left; appearance:none; background:none; border:none; cursor:pointer; font-family:var(--font-body); font-size:13px; color:var(--body); padding:7px 10px; border-radius:var(--r-xs)}
+.menu__item:hover{background:var(--surface-strong); color:var(--ink)}
+.menu__item--danger{color:var(--sev-critical)}
+.accordion{border:1px solid var(--hairline); border-radius:var(--r-sm); overflow:hidden; width:100%}
+.accordion__item + .accordion__item{border-top:1px solid var(--hairline)}
+.accordion__trigger{display:flex; align-items:center; justify-content:space-between; gap:var(--sp-md); width:100%; text-align:left; appearance:none; background:var(--panel); border:none; cursor:pointer; font-family:var(--font-display); font-size:13px; font-weight:500; color:var(--ink); padding:12px 14px}
+.accordion__chev{color:var(--muted); font-size:15px; line-height:1; flex:none}
+.accordion__panel{padding:0 14px 14px; font-size:13px; color:var(--body)}
+.steps{display:flex; gap:6px; flex-wrap:wrap}
+.steps__step{font-family:var(--font-mono); font-size:10px; letter-spacing:.04em; padding:5px 9px; border-radius:var(--r-xs); background:var(--surface-card); color:var(--muted)}
+.steps__step.done{background:var(--sev-resolved-bg); color:var(--sev-resolved)}
+.steps__step.curr{background:var(--accent); color:var(--on-accent)}
+.kv{display:grid; grid-template-columns:auto 1fr; gap:6px 16px; margin:0}
+.kv dt{font-family:var(--font-mono); font-size:10px; text-transform:uppercase; letter-spacing:.04em; color:var(--muted)}
+.kv dd{margin:0; font-family:var(--font-mono); font-size:11.5px; color:var(--ink)}
+.feed-demo{display:flex; flex-direction:column; border:1px solid var(--hairline); border-radius:var(--r-md); overflow:hidden; max-width:420px}
+.feed__item{display:grid; grid-template-columns:54px 26px 1fr; gap:8px; align-items:center; padding:7px 10px; border:none; background:var(--panel); text-align:left; cursor:pointer; border-bottom:1px solid var(--hairline)}
+.feed__item:last-child{border-bottom:none}
+.feed__item:hover{background:var(--row-hover)}
+.feed__time{font-family:var(--font-mono); font-size:10px; color:var(--muted-soft)}
+.feed__msg{font-size:12.5px; color:var(--ink); overflow:hidden; text-overflow:ellipsis; white-space:nowrap}
+.slider{display:flex; flex-direction:column; gap:var(--sp-sm); width:240px}
+.slider__head{display:flex; align-items:center; justify-content:space-between}
+.slider__label{font-family:var(--font-mono); font-size:10px; text-transform:uppercase; letter-spacing:.06em; color:var(--muted)}
+.slider__value{font-family:var(--font-mono); font-size:12px; color:var(--ink)}
+.slider__range{-webkit-appearance:none; appearance:none; width:100%; height:4px; border-radius:999px; background:var(--surface-strong); cursor:pointer}
+.slider__range::-webkit-slider-thumb{-webkit-appearance:none; appearance:none; width:16px; height:16px; border-radius:50%; background:var(--accent); border:2px solid var(--panel); box-shadow:var(--shadow-sm); cursor:pointer}
+.slider__range::-moz-range-thumb{width:16px; height:16px; border-radius:50%; background:var(--accent); border:2px solid var(--panel); cursor:pointer}
+.tbl tr.is-active td{background:var(--surface-card)}
+.subhead{font-family:var(--font-mono); font-size:11px; letter-spacing:.08em; text-transform:uppercase; color:var(--muted-soft); margin:34px 0 2px; padding-top:14px; border-top:1px solid var(--hairline)}
+
+@media (max-width:880px){
+  .app{grid-template-columns:1fr}
+  .sidenav{display:none}
+  main{padding:24px 18px 64px}
+}
+@media (prefers-reduced-motion:reduce){*{animation:none!important; transition:none!important}}
+</style>
+</head>
+<body>
+<a href="#main" class="skip">Skip to content</a>
+<div class="app">
+  <header class="topbar">
+    <span class="brand"><span class="brand-mark" aria-hidden="true">C</span> CTOC&nbsp;·&nbsp;DESIGN&nbsp;SYSTEM</span>
+    <span class="ver">v1.0.0</span>
+    <span class="spacer"></span>
+    <button class="tbtn" id="themeToggle" aria-pressed="false" aria-label="Dark theme" title="Toggle theme">☾</button>
+  </header>
+
+  <nav class="sidenav" aria-label="Documentation">
+    <div class="navgrp" id="g-overview">Overview</div>
+    <div role="list" aria-labelledby="g-overview">
+      <button class="navlink" data-sec="home" role="listitem" aria-current="page">Home</button>
+      <button class="navlink" data-sec="start" role="listitem">Getting Started</button>
+      <button class="navlink" data-sec="resources" role="listitem">Resources</button>
+    </div>
+    <div class="navgrp" id="g-found">Foundations</div>
+    <div role="list" aria-labelledby="g-found">
+      <button class="navlink" data-sec="foundations" role="listitem">Foundations</button>
+      <button class="navlink" data-sec="tokens" role="listitem">Tokens</button>
+      <button class="navlink" data-sec="variables" role="listitem">Variables</button>
+      <button class="navlink" data-sec="styles" role="listitem">Styles</button>
+    </div>
+    <div class="navgrp" id="g-build">Build</div>
+    <div role="list" aria-labelledby="g-build">
+      <button class="navlink" data-sec="components" role="listitem">Components</button>
+      <button class="navlink" data-sec="patterns" role="listitem">Patterns</button>
+      <button class="navlink" data-sec="templates" role="listitem">Templates</button>
+    </div>
+    <div class="navgrp" id="g-std">Standards</div>
+    <div role="list" aria-labelledby="g-std">
+      <button class="navlink" data-sec="accessibility" role="listitem">Accessibility</button>
+      <button class="navlink" data-sec="governance" role="listitem">Governance</button>
+      <button class="navlink" data-sec="changelog" role="listitem">Changelog</button>
+    </div>
+  </nav>
+
+  <main id="main" tabindex="-1">
+
+    <!-- HOME -->
+    <section class="section is-active" id="sec-home" aria-labelledby="h-home">
+      <p class="eyebrow">CTOC Command</p>
+      <h1 class="h1" id="h-home">The CTOC Design System</h1>
+      <p class="lead">The token-driven, severity-led, accessibility-first design system behind <strong>CTOC Command</strong> — a fusion-model SOC dashboard. Warm monochrome surfaces, severity as the only color system, WCAG&nbsp;2.2&nbsp;AA as a release gate.</p>
+      <div class="demo" style="margin-top:18px">
+        <span class="sev sev--critical"><span class="sq"></span>CRITICAL</span>
+        <span class="sev sev--high"><span class="sq"></span>HIGH</span>
+        <span class="sev sev--medium"><span class="sq"></span>MEDIUM</span>
+        <span class="sev sev--low"><span class="sq"></span>LOW</span>
+        <span class="sev sev--resolved"><span class="sq"></span>RESOLVED</span>
+      </div>
+      <h2 class="h2">By the numbers</h2>
+      <div class="statgrid">
+        <div><div class="stat">153</div><div class="lbl">Design tokens</div></div>
+        <div><div class="stat">3</div><div class="lbl">Themes</div></div>
+        <div><div class="stat">~29</div><div class="lbl">Components</div></div>
+        <div><div class="stat">6</div><div class="lbl">Patterns</div></div>
+        <div><div class="stat">5</div><div class="lbl">Templates</div></div>
+      </div>
+      <h2 class="h2">Principles</h2>
+      <div class="grid cards-3">
+        <div class="card"><h4>Comprehension over collection</h4><p>Don’t show more data — fuse and rank it. Kill-chain, ATT&CK, and severity answer “what now?”.</p></div>
+        <div class="card"><h4>Density with discipline</h4><p>Pack information, but one idea per panel and a strict compact scale. Never noise.</p></div>
+        <div class="card"><h4>Severity is the signal</h4><p>Monochrome is the canvas; color is reserved for the 5-state severity model and selection.</p></div>
+        <div class="card"><h4>Meaning survives without color</h4><p>Every severity cue pairs hue with a glyph or label (1.4.1). Grayscale loses nothing.</p></div>
+        <div class="card"><h4>Accessible by default</h4><p>WCAG 2.2 AA is a gate, not a polish pass — keyboard, focus, targets, contrast.</p></div>
+        <div class="card"><h4>Systematic</h4><p>Every visual value traces to a token in <code>app/globals.css</code>, mirrored here and in Figma.</p></div>
+      </div>
+    </section>
+
+    <!-- GETTING STARTED -->
+    <section class="section" id="sec-start" aria-labelledby="h-start">
+      <p class="eyebrow">Foundations</p>
+      <h1 class="h1" id="h-start">Getting Started</h1>
+      <p class="lead">How to consume the system in code and design, and the architecture that keeps both in sync.</p>
+
+      <h2 class="h2">Source of truth</h2>
+      <p>The <strong>runtime source of truth is <code>app/globals.css</code></strong> — CSS custom properties under <code>:root</code> (light) and <code>[data-theme="dark"]</code> (dark). The JSON in <code>tokens/</code> and the Figma variables mirror it. Never hardcode a visual value; reference a token.</p>
+
+      <h2 class="h2">Using it in code</h2>
+      <div class="tbl-wrap"><table class="tbl">
+        <tr><td class="mono">var(--color-ink)</td><td>primary text / headings</td></tr>
+        <tr><td class="mono">var(--panel-bg)</td><td>panel surface</td></tr>
+        <tr><td class="mono">var(--sev-critical-solid)</td><td>critical badge fill (white text)</td></tr>
+        <tr><td class="mono">var(--spacing-md)</td><td>12px gap/padding</td></tr>
+      </table></div>
+      <p class="muted" style="margin-top:8px">Run <code>npm run validate:theme</code> to verify every token pair passes WCAG AA before shipping.</p>
+
+      <h2 class="h2">Using it in Figma</h2>
+      <p>Four variable collections — <strong>Primitives, Scale, Type, Color</strong>. The Color collection carries three modes (<strong>Light / Dark / High Contrast</strong>); set a frame’s mode to theme it. Bind components to <em>semantic</em> variables (<code>color/*</code>, <code>sev/*</code>), never to primitives.</p>
+
+      <h2 class="h2">Token architecture</h2>
+      <p>Three tiers: <strong>Primitives</strong> (raw hex/px) → <strong>Semantic</strong> (role aliases like <code>color/bg/canvas</code>, <code>sev/critical/fill</code>) → <strong>Component</strong> (bound on instances). Semantics alias primitives — never duplicate raw values.</p>
+    </section>
+
+    <!-- RESOURCES -->
+    <section class="section" id="sec-resources" aria-labelledby="h-res">
+      <p class="eyebrow">Overview</p>
+      <h1 class="h1" id="h-res">Resources</h1>
+      <p class="lead">Where everything lives.</p>
+      <div class="grid cards-3" style="margin-top:16px">
+        <div class="card"><h4>Figma — Design System</h4><p>Tokens · styles · components · patterns · templates.</p><p style="margin-top:8px"><a href="https://www.figma.com/design/PzFJgRmPVjwzx40af9jQne/CTOC-Design-System">Open file →</a></p></div>
+        <div class="card"><h4>Figma — Prototype</h4><p>The 13 interactive CTOC screens.</p><p style="margin-top:8px"><a href="https://www.figma.com/design/i3YWhwkly7iJEmk0tK3YJ7/CTOC">Open file →</a></p></div>
+        <div class="card"><h4>Live dashboard</h4><p>The deployed CTOC Command app.</p><p style="margin-top:8px"><a href="https://rbabiarz.github.io/CTOC/">Open →</a></p></div>
+        <div class="card"><h4>Repo docs</h4><p><code>DESIGN.md</code>, <code>design-system/</code>, <code>tokens/</code>, <code>docs/</code>, <code>code-connect/</code>.</p></div>
+      </div>
+    </section>
+
+    <!-- FOUNDATIONS -->
+    <section class="section" id="sec-foundations" aria-labelledby="h-found">
+      <p class="eyebrow">Foundations</p>
+      <h1 class="h1" id="h-found">Foundations</h1>
+      <p class="lead">The visual primitives. Everything below is rendered live from the same tokens the product uses — toggle the theme to see them adapt.</p>
+
+      <h2 class="h2">Severity — the one color system</h2>
+      <div class="sevcards">
+        <div class="sevcard"><span class="sev sev--critical"><span class="sq"></span>CRITICAL</span><div class="bar" style="background:var(--sev-critical)"></div><span class="hex mono" style="font-size:9.5px;color:var(--muted-soft)">sev/critical · solid · on · bg</span></div>
+        <div class="sevcard"><span class="sev sev--high"><span class="sq"></span>HIGH</span><div class="bar" style="background:var(--sev-high)"></div><span class="hex mono" style="font-size:9.5px;color:var(--muted-soft)">sev/high · fill · text · bg</span></div>
+        <div class="sevcard"><span class="sev sev--medium"><span class="sq"></span>MEDIUM</span><div class="bar" style="background:var(--sev-medium)"></div><span class="hex mono" style="font-size:9.5px;color:var(--muted-soft)">sev/medium · fill · text · bg</span></div>
+        <div class="sevcard"><span class="sev sev--low"><span class="sq"></span>LOW</span><div class="bar" style="background:var(--sev-low)"></div><span class="hex mono" style="font-size:9.5px;color:var(--muted-soft)">sev/low · fill · text · bg</span></div>
+        <div class="sevcard"><span class="sev sev--resolved"><span class="sq"></span>RESOLVED</span><div class="bar" style="background:var(--sev-resolved)"></div><span class="hex mono" style="font-size:9.5px;color:var(--muted-soft)">sev/resolved · fill · bg</span></div>
+      </div>
+      <p class="muted" style="margin-top:10px">Critical is the punchiest — a solid red badge. The rest are tinted. Bright fills are for dots/bars; the <code>-text</code> variants are for colored text on light surfaces (the bright fills fail contrast as text).</p>
+
+      <h2 class="h2">Surfaces, text &amp; borders</h2>
+      <div class="swatches" id="surfaceSwatches"></div>
+
+      <h2 class="h2">Typography</h2>
+      <div class="type-row"><div style="font-family:var(--font-display);font-weight:600;font-size:28px;color:var(--ink);letter-spacing:-.01em">1,442</div><div class="spec">Display / KPI · Inter Semi&nbsp;Bold · 28 / 120%</div></div>
+      <div class="type-row"><div style="font-family:var(--font-display);font-weight:600;font-size:18px;color:var(--ink)">Threat Detection</div><div class="spec">Heading / Screen Title · Inter Semi&nbsp;Bold · 18</div></div>
+      <div class="type-row"><div style="font-family:var(--font-display);font-weight:600;font-size:12px;color:var(--ink);text-transform:uppercase;letter-spacing:.04em">Active Campaigns</div><div class="spec">Heading / Panel Title · Inter Semi&nbsp;Bold · 12 uppercase</div></div>
+      <div class="type-row"><div style="font-size:13px;color:var(--body)">Real-time alert stream, fused across detection sources.</div><div class="spec">Body / Default · DM Sans · 13 / 140%</div></div>
+      <div class="type-row"><div style="font-family:var(--font-mono);font-weight:500;font-size:10px;color:var(--muted-soft);letter-spacing:.08em;text-transform:uppercase">Mean Time To Detect</div><div class="spec">Label / Micro · JetBrains Mono · 10 / 8% track</div></div>
+      <div class="type-row"><div style="font-family:var(--font-mono);font-size:11.5px;color:var(--body)">ALT-78441 · T1003 · 14:42:08 UTC</div><div class="spec">Data / Mono · JetBrains Mono · 11.5</div></div>
+
+      <h2 class="h2">Spacing</h2>
+      <div id="spacingScale"></div>
+
+      <h2 class="h2">Radius</h2>
+      <div style="display:flex;gap:14px;flex-wrap:wrap">
+        <div class="radius-chip"><div class="sq" style="border-radius:4px"></div><span class="mono" style="font-size:10px;color:var(--muted)">radius/xs · 4</span></div>
+        <div class="radius-chip"><div class="sq" style="border-radius:6px"></div><span class="mono" style="font-size:10px;color:var(--muted)">radius/sm · 6</span></div>
+        <div class="radius-chip"><div class="sq" style="border-radius:8px"></div><span class="mono" style="font-size:10px;color:var(--muted)">radius/md · 8</span></div>
+        <div class="radius-chip"><div class="sq" style="border-radius:12px"></div><span class="mono" style="font-size:10px;color:var(--muted)">radius/lg · 12</span></div>
+        <div class="radius-chip"><div class="sq" style="border-radius:50%"></div><span class="mono" style="font-size:10px;color:var(--muted)">radius/full</span></div>
+      </div>
+
+      <h2 class="h2">Elevation</h2>
+      <div class="elev">
+        <div class="e" style="box-shadow:var(--shadow-sm)">Elevation / sm</div>
+        <div class="e" style="box-shadow:var(--shadow-md)">Elevation / md</div>
+        <div class="e" style="box-shadow:var(--shadow-lg)">Elevation / lg</div>
+      </div>
+    </section>
+
+    <!-- TOKENS -->
+    <section class="section" id="sec-tokens" aria-labelledby="h-tok">
+      <p class="eyebrow">Foundations</p>
+      <h1 class="h1" id="h-tok">Tokens</h1>
+      <p class="lead">Semantic tokens (the layer components reference) with their light/dark resolution and CSS code syntax.</p>
+      <h2 class="h2">Semantic color</h2>
+      <div class="tbl-wrap"><table class="tbl">
+        <thead><tr><th>Token</th><th>Light</th><th>Dark</th><th>CSS</th></tr></thead>
+        <tbody id="tokenRows"></tbody>
+      </table></div>
+      <h2 class="h2">Scale</h2>
+      <div class="tbl-wrap"><table class="tbl">
+        <thead><tr><th>Token</th><th>Value</th><th>CSS</th></tr></thead>
+        <tbody>
+          <tr><td class="mono">spacing/xs … 6xl</td><td>4 · 8 · 12 · 16 · 20 · 24 · 32 · 48 · 64 · 96</td><td class="mono">var(--spacing-*)</td></tr>
+          <tr><td class="mono">radius/xs … xl</td><td>4 · 6 · 8 · 12 · 16 · full</td><td class="mono">var(--rounded-*)</td></tr>
+          <tr><td class="mono">border-width</td><td>hairline 1 · thick 2</td><td class="mono">var(--border-*)</td></tr>
+        </tbody>
+      </table></div>
+    </section>
+
+    <!-- VARIABLES -->
+    <section class="section" id="sec-variables" aria-labelledby="h-var">
+      <p class="eyebrow">Foundations</p>
+      <h1 class="h1" id="h-var">Figma Variables</h1>
+      <p class="lead">How the tokens are structured as Figma variable collections and modes.</p>
+      <div class="tbl-wrap"><table class="tbl">
+        <thead><tr><th>Collection</th><th>Modes</th><th>Holds</th></tr></thead>
+        <tbody>
+          <tr><td class="mono">Primitives</td><td>Value</td><td>81 raw colors — gray ramp, brand hues, severity ramps, HC neutrals</td></tr>
+          <tr><td class="mono">Scale</td><td>Value</td><td>spacing · radius · border-width</td></tr>
+          <tr><td class="mono">Type</td><td>Value</td><td>families · sizes · weights · line-heights · tracking</td></tr>
+          <tr><td class="mono">Color</td><td>Light · Dark · High&nbsp;Contrast</td><td>29 semantic colors, each aliased to a primitive per mode</td></tr>
+        </tbody>
+      </table></div>
+      <p class="muted" style="margin-top:10px">Every variable is scoped (never <code>ALL_SCOPES</code>) and carries a WEB code-syntax mapping to its CSS variable, so Dev Mode shows <code>var(--sev-critical-solid)</code> etc.</p>
+    </section>
+
+    <!-- STYLES -->
+    <section class="section" id="sec-styles" aria-labelledby="h-sty">
+      <p class="eyebrow">Foundations</p>
+      <h1 class="h1" id="h-sty">Styles</h1>
+      <p class="lead">Shared text and effect styles in the Figma library.</p>
+      <h2 class="h2">Text styles</h2>
+      <div class="tbl-wrap"><table class="tbl">
+        <thead><tr><th>Style</th><th>Font</th><th>Size / LH</th></tr></thead>
+        <tbody>
+          <tr><td>Display / KPI</td><td>Inter Semi Bold</td><td>28 / 120%</td></tr>
+          <tr><td>Heading / Screen Title</td><td>Inter Semi Bold</td><td>18 / 125%</td></tr>
+          <tr><td>Heading / Panel Title</td><td>Inter Semi Bold</td><td>12 / 130% · uppercase</td></tr>
+          <tr><td>Body / Default · Small · Caption</td><td>DM Sans</td><td>13 · 12 · 11</td></tr>
+          <tr><td>Label / Micro</td><td>JetBrains Mono Medium</td><td>10 · 8% track</td></tr>
+          <tr><td>Data / Mono · Mono Strong</td><td>JetBrains Mono</td><td>11.5</td></tr>
+        </tbody>
+      </table></div>
+      <h2 class="h2">Effect styles</h2>
+      <div class="tbl-wrap"><table class="tbl">
+        <tbody>
+          <tr><td class="mono">Elevation / sm · md · lg</td><td>layered drop shadows for cards, popovers, modals</td></tr>
+          <tr><td class="mono">Focus ring</td><td>2px spread ring for keyboard focus</td></tr>
+        </tbody>
+      </table></div>
+    </section>
+
+    <!-- COMPONENTS -->
+    <section class="section" id="sec-components" aria-labelledby="h-comp">
+      <p class="eyebrow">Build</p>
+      <h1 class="h1" id="h-comp">Components</h1>
+      <p class="lead">Live examples rendered from the same token CSS the product uses. Every primitive below ships from <code>components/ui</code> and maps to a Figma component via Code Connect.</p>
+
+      <p class="subhead">Actions &amp; status</p>
+      <h3 class="h3">Button — <code>&lt;Btn&gt;</code></h3>
+      <div class="demo">
+        <button class="btn">DEFAULT</button>
+        <button class="btn btn--primary">DECLARE INCIDENT</button>
+        <button class="btn btn--danger">DISMISS</button>
+        <button class="btn btn--ghost">GHOST</button>
+        <button class="btn btn--primary" disabled>DISABLED</button>
+      </div>
+      <div class="tbl-wrap" style="margin-top:12px"><table class="tbl">
+        <thead><tr><th>Prop</th><th>Type</th><th>Notes</th></tr></thead>
+        <tbody>
+          <tr><td class="mono">variant</td><td class="mono">primary｜danger｜ghost</td><td>omit for default</td></tr>
+          <tr><td class="mono">size</td><td class="mono">xs</td><td>compact toolbar size</td></tr>
+          <tr><td class="mono">active / disabled</td><td class="mono">boolean</td><td>spreads native button attrs</td></tr>
+        </tbody>
+      </table></div>
+
+      <h3 class="h3">Severity Badge — <code>&lt;Sev&gt;</code></h3>
+      <div class="demo">
+        <span class="sev sev--critical"><span class="sq"></span>CRITICAL</span>
+        <span class="sev sev--high"><span class="sq"></span>HIGH</span>
+        <span class="sev sev--medium"><span class="sq"></span>MEDIUM</span>
+        <span class="sev sev--low"><span class="sq"></span>LOW</span>
+        <span class="sev sev--resolved"><span class="sq"></span>RESOLVED</span>
+      </div>
+      <p class="muted" style="margin-top:8px"><code>level: critical｜high｜medium｜low｜resolved</code> — always glyph + label (1.4.1).</p>
+
+      <h3 class="h3">Status Dot</h3>
+      <div class="demo">
+        <span class="statusdot" style="color:var(--sev-critical)"><span class="d" style="background:var(--sev-critical)"></span>OPEN</span>
+        <span class="statusdot" style="color:var(--sev-medium-text)"><span class="d" style="background:var(--sev-medium)"></span>TRIAGE</span>
+        <span class="statusdot" style="color:var(--sev-resolved)"><span class="d" style="background:var(--sev-resolved)"></span>CONTAINED</span>
+      </div>
+
+      <h3 class="h3">Tag / Chip — <code>&lt;Tag&gt;</code></h3>
+      <div class="demo">
+        <span class="tag">STAGE 6/7</span><span class="tag">CONF 92%</span><span class="tag tag--active">LIVE</span>
+      </div>
+
+      <p class="subhead">Data display</p>
+      <h3 class="h3">KPI — <code>&lt;KPI&gt;</code></h3>
+      <div class="demo">
+        <div class="kpi"><div class="lbl">Open Alerts</div><div class="v">218</div><div class="f">14-DAY AVG 1,330</div></div>
+        <div class="kpi kpi--crit"><div class="lbl">Critical Incidents</div><div class="v">3</div><div class="f">INC-9981 · ETA 14:55</div></div>
+      </div>
+
+      <h3 class="h3">Panel — <code>&lt;Panel&gt;</code></h3>
+      <div class="panel" style="max-width:420px">
+        <div class="panel__head"><span class="panel__title">Alert Queue</span><span class="mono" style="font-size:10px;color:var(--muted-soft)">newest first</span></div>
+        <div class="panel__body"><p style="margin:0;font-size:13px">Panel body — tables, bar lists, charts, maps. Title renders as an <code>&lt;h2&gt;</code>.</p></div>
+      </div>
+
+      <h3 class="h3">Table — <code>&lt;Table&gt;</code> · <code>&lt;ClickableRow&gt;</code></h3>
+      <div class="tbl-wrap" style="max-width:560px"><table class="tbl">
+        <thead><tr><th>ID</th><th>Campaign</th><th>Sev</th><th>Status</th></tr></thead>
+        <tbody>
+          <tr class="is-active"><td class="mono">CMP-2841</td><td>Operation TIDEWAVE</td><td><span class="sev sev--critical"><span class="sq"></span>CRIT</span></td><td><span class="statusdot" style="color:var(--sev-critical)"><span class="d" style="background:var(--sev-critical)"></span>OPEN</span></td></tr>
+          <tr><td class="mono">CMP-2839</td><td>Operation RUSTFALL</td><td><span class="sev sev--high"><span class="sq"></span>HIGH</span></td><td><span class="statusdot" style="color:var(--sev-medium-text)"><span class="d" style="background:var(--sev-medium)"></span>TRIAGE</span></td></tr>
+        </tbody>
+      </table></div>
+      <p class="muted" style="margin-top:8px"><code>&lt;ClickableRow&gt;</code> wraps the keyboard pattern (tabindex · Enter/Space · aria-current); the selected row uses <code>is-active</code>.</p>
+
+      <h3 class="h3">Key-Value List — <code>&lt;KeyValueList&gt;</code></h3>
+      <div class="demo">
+        <dl class="kv">
+          <dt>Host</dt><dd>APP-77.cti.prod</dd>
+          <dt>Detector</dt><dd>EDR / Carbon Black</dd>
+          <dt>Confidence</dt><dd>92% · fusion v3</dd>
+          <dt>SLA</dt><dd>15 min (P1)</dd>
+        </dl>
+      </div>
+
+      <h3 class="h3">Step Progress — <code>&lt;StepProgress&gt;</code></h3>
+      <div class="demo">
+        <div class="steps">
+          <span class="steps__step done">DETECT</span><span class="steps__step done">TRIAGE</span><span class="steps__step done">INVEST</span><span class="steps__step done">ESCAL</span><span class="steps__step curr">CONTAIN</span><span class="steps__step">RESOLVE</span>
+        </div>
+      </div>
+
+      <h3 class="h3">Feed — <code>&lt;Feed&gt;</code></h3>
+      <div class="feed-demo">
+        <button class="feed__item"><span class="feed__time">14:42:08</span><span class="d" style="width:8px;height:8px;border-radius:2px;background:var(--sev-critical)"></span><span class="feed__msg">LSASS credential dump · APP-77</span></button>
+        <button class="feed__item"><span class="feed__time">14:41:52</span><span class="d" style="width:8px;height:8px;border-radius:2px;background:var(--sev-critical)"></span><span class="feed__msg">DCSync from non-DC origin · DC-01</span></button>
+        <button class="feed__item"><span class="feed__time">14:39:18</span><span class="d" style="width:8px;height:8px;border-radius:2px;background:var(--sev-high)"></span><span class="feed__msg">Egress 2.3GB to cdn-msft-update[.]com</span></button>
+      </div>
+
+      <h3 class="h3">Avatar — <code>&lt;Avatar&gt;</code></h3>
+      <div class="demo">
+        <span class="avatar avatar--sm">MO</span><span class="avatar avatar--md">RP</span><span class="avatar avatar--lg">AW</span>
+      </div>
+
+      <p class="subhead">Forms</p>
+      <h3 class="h3">Input · Textarea — <code>&lt;Input&gt;</code> <code>&lt;Textarea&gt;</code></h3>
+      <div class="demo" style="align-items:stretch">
+        <div style="display:flex;flex-direction:column;gap:10px;width:280px">
+          <input class="input" placeholder="Search alerts…" aria-label="Search alerts" />
+          <input class="input input--invalid" value="bad-host!" aria-invalid="true" aria-label="Host (invalid)" />
+          <textarea class="input textarea" placeholder="Analyst notes…" aria-label="Analyst notes"></textarea>
+        </div>
+      </div>
+
+      <h3 class="h3">Select — <code>&lt;Select&gt;</code></h3>
+      <div class="demo">
+        <span class="select" style="width:260px"><select class="select__el" aria-label="Detection source"><option>EDR / Carbon Black</option><option>NDR / Vectra</option></select><span class="select__chev">▾</span></span>
+      </div>
+
+      <h3 class="h3">Combobox — <code>&lt;Combobox&gt;</code></h3>
+      <div class="demo" style="align-items:flex-start">
+        <div class="combobox" style="width:260px">
+          <input class="input combobox__input" value="EDR / Carbon Black" readonly aria-label="Detection source (combobox)" />
+          <span class="combobox__chev">▾</span>
+          <ul class="combobox__list" role="listbox">
+            <li class="combobox__opt is-selected">EDR / Carbon Black</li>
+            <li class="combobox__opt is-active">NDR / Vectra</li>
+            <li class="combobox__opt">IDP / Okta</li>
+          </ul>
+        </div>
+      </div>
+
+      <h3 class="h3">Checkbox · Radio · Switch — <code>&lt;Checkbox&gt;</code> <code>&lt;Radio&gt;</code> <code>&lt;Switch&gt;</code></h3>
+      <div class="demo">
+        <label class="choice"><input type="checkbox" class="choice__cb" checked /><span>Auto-contain</span></label>
+        <label class="choice"><input type="checkbox" class="choice__cb" /><span>Suppress noise</span></label>
+        <label class="choice"><input type="radio" name="d-sev" class="choice__cb choice__cb--radio" checked /><span>P1</span></label>
+        <label class="choice"><input type="radio" name="d-sev" class="choice__cb choice__cb--radio" /><span>P2</span></label>
+        <label class="switch"><input type="checkbox" role="switch" class="switch__cb" checked /><span>Live</span></label>
+      </div>
+
+      <h3 class="h3">Slider — <code>&lt;Slider&gt;</code></h3>
+      <div class="demo">
+        <div class="slider"><div class="slider__head"><label class="slider__label" for="d-slider">Confidence threshold</label><span class="slider__value">80</span></div><input id="d-slider" type="range" class="slider__range" min="0" max="100" value="80" /></div>
+      </div>
+
+      <p class="subhead">Navigation</p>
+      <h3 class="h3">Tabs — <code>&lt;Tabs&gt;</code></h3>
+      <div class="demo"><div class="tabs" role="tablist"><button class="tabs__tab is-active" role="tab" aria-selected="true">Overview</button><button class="tabs__tab" role="tab" aria-selected="false">Signals</button><button class="tabs__tab" role="tab" aria-selected="false">Timeline</button></div></div>
+
+      <h3 class="h3">Segmented — <code>&lt;Segmented&gt;</code></h3>
+      <div class="demo"><div class="segmented" role="group" aria-label="Time range"><button class="segmented__btn is-active" aria-pressed="true">1H</button><button class="segmented__btn" aria-pressed="false">24H</button><button class="segmented__btn" aria-pressed="false">7D</button><button class="segmented__btn" aria-pressed="false">30D</button></div></div>
+
+      <h3 class="h3">Breadcrumbs — <code>&lt;Breadcrumbs&gt;</code></h3>
+      <div class="demo"><nav class="breadcrumbs" aria-label="Breadcrumb"><ol class="breadcrumbs__list"><li class="breadcrumbs__item"><a href="#sec-components">OPS</a><span class="breadcrumbs__sep">/</span></li><li class="breadcrumbs__item"><a href="#sec-components">Incidents</a><span class="breadcrumbs__sep">/</span></li><li class="breadcrumbs__item"><span aria-current="page">INC-9978</span></li></ol></nav></div>
+
+      <h3 class="h3">Pagination — <code>&lt;Pagination&gt;</code></h3>
+      <div class="demo"><nav class="pagination" aria-label="Pagination"><button class="pagination__btn" aria-label="Previous">◀</button><button class="pagination__btn is-active" aria-current="page">1</button><button class="pagination__btn">2</button><button class="pagination__btn">3</button><span class="pagination__gap">…</span><button class="pagination__btn">12</button><button class="pagination__btn" aria-label="Next">▶</button></nav></div>
+
+      <h3 class="h3">Menu — <code>&lt;Menu&gt;</code></h3>
+      <div class="demo" style="align-items:flex-start">
+        <div class="menu">
+          <button class="menu__trigger" aria-haspopup="menu" aria-expanded="true">ACTIONS <span aria-hidden="true">▾</span></button>
+          <ul class="menu__list" role="menu">
+            <li><button class="menu__item" role="menuitem">Assign to me</button></li>
+            <li><button class="menu__item" role="menuitem">Escalate</button></li>
+            <li><button class="menu__item menu__item--danger" role="menuitem">Dismiss</button></li>
+          </ul>
+        </div>
+      </div>
+
+      <p class="subhead">Feedback &amp; overlays</p>
+      <h3 class="h3">Alert · Toast — <code>&lt;Alert&gt;</code> <code>&lt;Toast&gt;</code></h3>
+      <div class="grid" style="max-width:560px">
+        <div class="alert alert--critical"><span class="alert__dot"></span><div class="alert__content"><div class="alert__title">APT-441 lateral movement</div><div class="alert__msg">DC-01 compromised — containment running.</div></div><button class="alert__close" aria-label="Dismiss">✕</button></div>
+        <div class="alert alert--warning"><span class="alert__dot"></span><div class="alert__content"><div class="alert__msg">SLA at risk on INC-9970 — 06:14 left.</div></div></div>
+        <div class="alert alert--success"><span class="alert__dot"></span><div class="alert__content"><div class="alert__msg">Wire hold cleared — L-7811 released.</div></div></div>
+        <div class="alert alert--info"><span class="alert__dot"></span><div class="alert__content"><div class="alert__msg">New detection rule R-CB-0188 deployed.</div></div></div>
+        <div class="alert toast alert--neutral"><span class="alert__dot"></span><div class="alert__content"><div class="alert__title">Toast</div><div class="alert__msg">Same tones, elevated — for transient notifications.</div></div></div>
+      </div>
+
+      <h3 class="h3">Modal — <code>&lt;Modal&gt;</code></h3>
+      <div class="modal-demo">
+        <div class="modal__head"><span class="modal__title">Declare incident</span><button class="modal__close" aria-label="Close">✕</button></div>
+        <div class="modal__body">Escalate ALT-78441 into a tracked incident. Focus is trapped, Escape closes, and focus returns to the trigger on close.</div>
+        <div class="modal__foot"><button class="btn">CANCEL</button><button class="btn btn--primary">DECLARE</button></div>
+      </div>
+
+      <h3 class="h3">Accordion — <code>&lt;Accordion&gt;</code></h3>
+      <div class="accordion" style="max-width:420px">
+        <div class="accordion__item"><button class="accordion__trigger" aria-expanded="true"><span>Alert context</span><span class="accordion__chev">−</span></button><div class="accordion__panel">Host, detector, confidence and SLA for this alert.</div></div>
+        <div class="accordion__item"><button class="accordion__trigger" aria-expanded="false"><span>Related signals</span><span class="accordion__chev">+</span></button></div>
+        <div class="accordion__item"><button class="accordion__trigger" aria-expanded="false"><span>Recommended playbooks</span><span class="accordion__chev">+</span></button></div>
+      </div>
+
+      <h3 class="h3">Empty · Spinner — <code>&lt;Empty&gt;</code> <code>&lt;Spinner&gt;</code></h3>
+      <div class="demo" style="gap:32px">
+        <div class="empty" style="flex:1"><div class="empty__title">No open incidents</div><div class="empty__msg">All clear — incidents you open appear here with SLA tracking.</div><div style="margin-top:8px"><button class="btn btn--primary">+ NEW INCIDENT</button></div></div>
+        <span class="spinner__ring" role="status" aria-label="Loading"></span>
+      </div>
+
+      <div class="callout" style="margin-top:28px"><span class="lbl" style="color:var(--sev-resolved)">Coverage</span>All 22 reusable primitives above ship from <code>components/ui</code> and are Code-Connected to their Figma components. See <code>code-connect/README.md</code>.</div>
+    </section>
+
+    <!-- PATTERNS -->
+    <section class="section" id="sec-patterns" aria-labelledby="h-pat">
+      <p class="eyebrow">Build</p>
+      <h1 class="h1" id="h-pat">Patterns</h1>
+      <p class="lead">Compositions of components into reusable solutions. Each carries Purpose · When · Anatomy · Do/Don’t in Figma.</p>
+      <div class="grid cards-3" style="margin-top:16px">
+        <div class="card"><h4>Authentication</h4><p>SSO-first sign-in + MFA step-up for a restricted, monitored system.</p></div>
+        <div class="card"><h4>Filtering</h4><p>Facet chips → removable applied-filter pills with a live result count.</p></div>
+        <div class="card"><h4>Bulk Actions</h4><p>Selecting rows swaps the toolbar for a contextual action bar (destructive set apart).</p></div>
+        <div class="card"><h4>CRUD Workflows</h4><p>Master-detail; create via modal, delete behind a confirm.</p></div>
+        <div class="card"><h4>Multi-Step / Wizard</h4><p>Ordered steps with a progress stepper; Back never loses input.</p></div>
+        <div class="card"><h4>Error &amp; Empty Handling</h4><p>Every surface ships Loading · Empty · Error · Loaded — never just the happy path.</p></div>
+      </div>
+    </section>
+
+    <!-- TEMPLATES -->
+    <section class="section" id="sec-templates" aria-labelledby="h-tem">
+      <p class="eyebrow">Build</p>
+      <h1 class="h1" id="h-tem">Templates</h1>
+      <p class="lead">Full-screen layouts assembled from patterns + components on a shared App Shell (topbar + sidebar).</p>
+      <div class="grid cards-3" style="margin-top:16px">
+        <div class="card"><h4>Dashboard</h4><p>KPI strip + correlated campaigns table + signal contributors.</p></div>
+        <div class="card"><h4>Table View</h4><p>Header + filter bar + alert-queue grid + pagination.</p></div>
+        <div class="card"><h4>Detail</h4><p>Incident master-detail with a response-progress stepper.</p></div>
+        <div class="card"><h4>Wizard</h4><p>Declare-incident flow in the app context.</p></div>
+        <div class="card"><h4>Reporting</h4><p>Executive overview: posture KPIs, trend charts, ranked risks.</p></div>
+      </div>
+    </section>
+
+    <!-- ACCESSIBILITY -->
+    <section class="section" id="sec-accessibility" aria-labelledby="h-a11y">
+      <p class="eyebrow">Standards</p>
+      <h1 class="h1" id="h-a11y">Accessibility</h1>
+      <p class="lead">Target <strong>WCAG 2.2 AA / AODA</strong>. The product is axe-clean across all 13 screens in both themes; <code>npm run validate:theme</code> gates every release.</p>
+      <h2 class="h2">The gates</h2>
+      <ul class="tight">
+        <li><strong>Contrast (1.4.x):</strong> body ≥ 4.5:1, large/UI ≥ 3:1 — every token pair checked. Bright severity fills use <code>-text</code> variants when used as text.</li>
+        <li><strong>Color independence (1.4.1):</strong> severity always pairs hue with a glyph or word — never a bare colored dot.</li>
+        <li><strong>Keyboard (2.1):</strong> every control is a real <code>&lt;button&gt;</code>/<code>&lt;a&gt;</code>/input; clickable rows get <code>tabindex</code> + Enter/Space + label.</li>
+        <li><strong>Focus (2.4):</strong> visible <code>:focus-visible</code> ring everywhere; the triage drawer is a real modal (trap + restore); off-canvas nav uses <code>inert</code>; a skip link is the first tab stop.</li>
+        <li><strong>Targets &amp; motion (2.5, 2.3):</strong> hit targets ≥ 24px (≥ 44px touch nav); <code>prefers-reduced-motion</code> honored.</li>
+        <li><strong>Structure (1.3, 4.1):</strong> real heading order, list-based nav, <code>th</code> headers, icon-only controls labelled, informative SVGs get <code>role="img"</code>.</li>
+      </ul>
+      <div class="callout"><span class="lbl" style="color:var(--sev-resolved)">This page</span>This documentation portal follows the same rules: skip link, theme toggle with <code>aria-pressed</code>, keyboard-operable nav, reduced-motion support, and color-independent severity.</div>
+    </section>
+
+    <!-- GOVERNANCE -->
+    <section class="section" id="sec-governance" aria-labelledby="h-gov">
+      <p class="eyebrow">Standards</p>
+      <h1 class="h1" id="h-gov">Governance</h1>
+      <p class="lead">How the system changes, safely.</p>
+      <h2 class="h2">Contribution → release</h2>
+      <ul class="tight">
+        <li><strong>Propose</strong> in <code>docs/design-decisions.md</code> (ADR style) — context, decision, consequences.</li>
+        <li><strong>Review</strong> against <code>.claude/rules/</code> (design-system, accessibility, code-style, content-voice).</li>
+        <li><strong>Approve</strong> → implement on-system (token-bound, all states, accessible path).</li>
+        <li><strong>Release</strong> after <code>lint</code>, <code>build</code>, <code>validate:theme</code>, and an axe pass are green.</li>
+      </ul>
+      <h2 class="h2">Versioning (SemVer)</h2>
+      <div class="tbl-wrap"><table class="tbl">
+        <thead><tr><th>Bump</th><th>Meaning</th></tr></thead>
+        <tbody>
+          <tr><td class="mono">patch</td><td>token value fix, non-breaking style tweak</td></tr>
+          <tr><td class="mono">minor</td><td>additive component / variant / token</td></tr>
+          <tr><td class="mono">major</td><td>breaking rename or removal</td></tr>
+        </tbody>
+      </table></div>
+      <h2 class="h2">Deprecation</h2>
+      <p>Deprecations ship one minor ahead with a migration note in <code>docs/changelog.md</code> before removal. Nothing is deleted without a documented replacement.</p>
+    </section>
+
+    <!-- CHANGELOG -->
+    <section class="section" id="sec-changelog" aria-labelledby="h-cl">
+      <p class="eyebrow">Standards</p>
+      <h1 class="h1" id="h-cl">Changelog</h1>
+      <p class="lead">Notable design/UX changes. Newest first.</p>
+      <h2 class="h2">2026-06-29</h2>
+      <ul class="tight">
+        <li><strong>Component gallery expanded</strong> to all 22 reusable primitives — actions &amp; status, data display, forms, navigation, and feedback &amp; overlays — each rendered live from the token CSS.</li>
+        <li><strong>Code Connect 5 → 22</strong>: inline UI extracted into <code>components/ui</code> and the missing primitives built, each mapped to its Figma component.</li>
+      </ul>
+      <h2 class="h2">2026-06-28</h2>
+      <ul class="tight">
+        <li>HTML documentation portal (this site).</li>
+        <li><strong>Code Connect</strong> authored for Btn · Sev · Tag · KPI · Panel (publish pending an Org/Enterprise plan).</li>
+        <li><strong>Figma design system</strong> built: 153 variables (Light/Dark/High-Contrast) + 13 styles, ~29 components, 6 patterns, 5 templates + App Shell.</li>
+        <li>Deep-dive workspace scaffolded; punchier critical reds; single icon theme toggle.</li>
+      </ul>
+      <h2 class="h2">2026-06-27</h2>
+      <ul class="tight">
+        <li><strong>WCAG 2.2 AA / AODA pass</strong> — semantic buttons, real modal dialog, off-canvas focus mgmt, skip link, chart alternatives, axe gate (0 violations × 13 screens × 2 themes).</li>
+        <li><strong>Full responsive pass</strong> — off-canvas sidebar &lt; 1024px, stacking panels, scroll tables, <code>100dvh</code> shell.</li>
+      </ul>
+      <h2 class="h2">Earlier (2026)</h2>
+      <ul class="tight">
+        <li>App-wide light/dark theme with WCAG-validated tokens.</li>
+        <li>Full prototype: 13 screens, Fusion Kill Chain, Triage Drawer, TIDEWAVE scenario; GitHub Pages deploy.</li>
+      </ul>
+    </section>
+
+  </main>
+</div>
+
+<script>
+(function(){
+  "use strict";
+  var links = Array.prototype.slice.call(document.querySelectorAll('.navlink'));
+  var sections = Array.prototype.slice.call(document.querySelectorAll('.section'));
+  var main = document.getElementById('main');
+
+  function show(id, focus){
+    sections.forEach(function(s){ s.classList.toggle('is-active', s.id === 'sec-'+id); });
+    links.forEach(function(l){
+      var on = l.getAttribute('data-sec') === id;
+      if(on){ l.setAttribute('aria-current','page'); } else { l.removeAttribute('aria-current'); }
+    });
+    try{ history.replaceState(null,'','#'+id); }catch(e){}
+    if(focus){ main.scrollTop = 0; window.scrollTo(0,0); }
+  }
+  links.forEach(function(l){
+    l.addEventListener('click', function(){ show(l.getAttribute('data-sec'), true); });
+  });
+
+  // theme toggle (single button, aria-pressed)
+  var KEY='ctoc-ds-theme';
+  var root=document.documentElement, t=document.getElementById('themeToggle');
+  function setTheme(mode){
+    root.setAttribute('data-theme', mode);
+    var dark = mode==='dark';
+    t.setAttribute('aria-pressed', String(dark));
+    t.textContent = dark ? '☀' : '☾';
+    t.setAttribute('title', dark ? 'Switch to light theme' : 'Switch to dark theme');
+    try{ localStorage.setItem(KEY, mode); }catch(e){}
+  }
+  t.addEventListener('click', function(){ setTheme(root.getAttribute('data-theme')==='dark' ? 'light' : 'dark'); });
+  var saved; try{ saved = localStorage.getItem(KEY); }catch(e){}
+  setTheme(saved==='light'||saved==='dark' ? saved : (window.matchMedia && matchMedia('(prefers-color-scheme: dark)').matches ? 'dark':'light'));
+
+  // build surface swatches
+  var surfaces = [
+    ['canvas','--canvas'],['panel','--panel'],['panel-strong','--panel-strong'],
+    ['surface-soft','--surface-soft'],['surface-card','--surface-card'],['surface-strong','--surface-strong'],
+    ['ink','--ink'],['body','--body'],['muted','--muted'],['muted-soft','--muted-soft'],
+    ['hairline','--hairline'],['hairline-strong','--hairline-strong']
+  ];
+  var sc = document.getElementById('surfaceSwatches');
+  surfaces.forEach(function(s){
+    var el = document.createElement('div'); el.className='sw';
+    el.innerHTML = '<div class="chip" style="background:var('+s[1]+');border-bottom:1px solid var(--hairline)"></div>'+
+      '<div class="meta"><div class="nm">'+s[0]+'</div><div class="hex">var('+s[1]+')</div></div>';
+    sc.appendChild(el);
+  });
+
+  // spacing scale
+  var steps = [['xs',4],['sm',8],['md',12],['lg',16],['xl',20],['2xl',24],['3xl',32],['4xl',48],['5xl',64]];
+  var ss = document.getElementById('spacingScale');
+  steps.forEach(function(p){
+    var row=document.createElement('div'); row.className='spacing-row';
+    row.innerHTML='<div class="bar" style="width:'+p[1]+'px"></div><span class="mono" style="font-size:11px;color:var(--muted)">spacing/'+p[0]+' · '+p[1]+'px</span>';
+    ss.appendChild(row);
+  });
+
+  // token table
+  var tokens = [
+    ['color/bg/canvas','#fffcf5','#141312','--color-canvas'],
+    ['color/bg/panel','#fffefa','#1a1917','--panel-bg'],
+    ['color/text/ink','#0a0a0a','#f5f2eb','--color-ink'],
+    ['color/text/body','#2a2a2a','#d4cfc4','--color-body'],
+    ['color/text/muted','#595959','#b8b0a4','--color-muted'],
+    ['color/border/hairline','#e6dfc8','#353029','--hairline'],
+    ['sev/critical/solid','#d81b2a','#d81b2a','--sev-critical-solid'],
+    ['sev/critical/fill','#d81b2a','#f87171','--sev-critical'],
+    ['sev/high/fill','#e64d3c','#fb7185','--sev-high'],
+    ['sev/medium/fill','#d4a036','#fbbf24','--sev-medium'],
+    ['sev/low/fill','#1570ef','#60a5fa','--sev-low'],
+    ['sev/resolved/fill','#166534','#4ade80','--sev-resolved']
+  ];
+  var tb = document.getElementById('tokenRows');
+  tokens.forEach(function(r){
+    var tr=document.createElement('tr');
+    function sw(hex){ return '<span style="display:inline-block;width:12px;height:12px;border-radius:3px;border:1px solid var(--hairline);background:'+hex+';vertical-align:-2px;margin-right:6px"></span>'; }
+    tr.innerHTML='<td class="mono">'+r[0]+'</td><td class="mono">'+sw(r[1])+r[1]+'</td><td class="mono">'+sw(r[2])+r[2]+'</td><td class="mono">var('+r[3]+')</td>';
+    tb.appendChild(tr);
+  });
+
+  // open from hash
+  var initial = (location.hash||'').replace('#','');
+  if(initial && document.getElementById('sec-'+initial)){ show(initial,false); }
+})();
+</script>
+</body>
+</html>
