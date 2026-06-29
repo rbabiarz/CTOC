@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useRef, useEffect } from 'react';
-import { Btn, Sev, Tag } from '@/components/ui';
+import { Btn, Sev, Tag, StepProgress, Table } from '@/components/ui';
 import { KILL_CHAIN_STAGES } from '@/lib/mock-data';
 import type { Alert } from '@/lib/types';
 
@@ -84,11 +84,7 @@ export function TriageDrawer({ alert, onClose }: TriageDrawerProps) {
         <div className="drawer__body">
           <div className="drawer__section">
             <h3 className="drawer__section-title">Triage workflow</h3>
-            <div className="steps">
-              {TRIAGE_STEPS.map((s, i) => (
-                <div key={s} className={`steps__step ${i < step ? 'done' : ''} ${i === step ? 'curr' : ''}`}>{s}</div>
-              ))}
-            </div>
+            <StepProgress steps={TRIAGE_STEPS} current={step} />
             <div style={{ display: 'flex', gap: 6, marginTop: 8 }}>
               <Btn size="xs" onClick={back}>◀ BACK</Btn>
               <Btn size="xs" variant="primary" onClick={advance}>ADVANCE ▶ {TRIAGE_STEPS[Math.min(step + 1, TRIAGE_STEPS.length - 1)]}</Btn>
@@ -113,7 +109,7 @@ export function TriageDrawer({ alert, onClose }: TriageDrawerProps) {
 
           <div className="drawer__section">
             <h3 className="drawer__section-title">Related signals (last 30m)</h3>
-            <table className="tbl" style={{ fontSize: 11 }}>
+            <Table style={{ fontSize: 11 }}>
               <thead>
                 <tr><th>Time</th><th>Source</th><th>Signal</th><th className="num">Score</th></tr>
               </thead>
@@ -124,7 +120,7 @@ export function TriageDrawer({ alert, onClose }: TriageDrawerProps) {
                 <tr><td className="mono">14:36:12</td><td className="mono dim">EDR</td><td>winword.exe → cmd.exe injection</td><td className="num">78</td></tr>
                 <tr><td className="mono">14:24:11</td><td className="mono dim">IDP</td><td>MFA bypass attempt (svc-acct)</td><td className="num">67</td></tr>
               </tbody>
-            </table>
+            </Table>
           </div>
 
           <div className="drawer__section">

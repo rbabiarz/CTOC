@@ -1,7 +1,8 @@
 'use client';
 
+import { Fragment } from 'react';
 import type { CSSProperties, ReactNode, ButtonHTMLAttributes } from 'react';
-import type { Severity } from '@/lib/types';
+import type { Severity, Alert } from '@/lib/types';
 
 interface SevProps {
   level: Severity;
@@ -152,6 +153,130 @@ export function BarRow({ label, value, max, severity, suffix }: BarRowProps) {
         <div className={`bar-row__fill ${severity || ''}`} style={{ width: `${pct}%` }}></div>
       </div>
       <div className="bar-row__num">{value}{suffix || ''}</div>
+    </div>
+  );
+}
+
+/* ===== StatusDot — colored dot + label; meaning never by color alone (1.4.1) ===== */
+export type StatusTone = 'critical' | 'high' | 'warn' | 'ok' | 'info' | 'muted';
+
+interface StatusDotProps {
+  tone: StatusTone;
+  children: ReactNode;
+}
+
+export function StatusDot({ tone, children }: StatusDotProps) {
+  return (
+    <span className={`statusdot statusdot--${tone}`}>
+      <span className="statusdot__dot" aria-hidden="true"></span>
+      {children}
+    </span>
+  );
+}
+
+/* ===== KeyValueList — semantic <dl> metadata list ===== */
+interface KVItem {
+  term: ReactNode;
+  desc: ReactNode;
+}
+
+interface KeyValueListProps {
+  items: KVItem[];
+  className?: string;
+  style?: CSSProperties;
+}
+
+export function KeyValueList({ items, className, style }: KeyValueListProps) {
+  return (
+    <dl className={`kv ${className || ''}`.trim()} style={style}>
+      {items.map((it, i) => (
+        <Fragment key={i}>
+          <dt>{it.term}</dt>
+          <dd>{it.desc}</dd>
+        </Fragment>
+      ))}
+    </dl>
+  );
+}
+
+/* ===== StepProgress — ordered workflow stepper (done · current · upcoming) ===== */
+interface StepProgressProps {
+  steps: string[];
+  current: number;
+  className?: string;
+  style?: CSSProperties;
+}
+
+export function StepProgress({ steps, current, className, style }: StepProgressProps) {
+  return (
+    <div className={`steps ${className || ''}`.trim()} style={style}>
+      {steps.map((s, i) => (
+        <div key={s} className={`steps__step ${i < current ? 'done' : ''} ${i === current ? 'curr' : ''}`.trim()}>{s}</div>
+      ))}
+    </div>
+  );
+}
+
+/* ===== Table + ClickableRow — .tbl wrapper and the keyboard-accessible row pattern ===== */
+interface TableProps {
+  children: ReactNode;
+  className?: string;
+  style?: CSSProperties;
+}
+
+export function Table({ children, className, style }: TableProps) {
+  return <table className={`tbl ${className || ''}`.trim()} style={style}>{children}</table>;
+}
+
+interface ClickableRowProps {
+  onActivate: () => void;
+  active?: boolean;
+  ariaLabel: string;
+  className?: string;
+  children: ReactNode;
+}
+
+export function ClickableRow({ onActivate, active, ariaLabel, className, children }: ClickableRowProps) {
+  return (
+    <tr
+      className={`${active ? 'is-active' : ''} ${className || ''}`.trim()}
+      onClick={onActivate}
+      tabIndex={0}
+      aria-current={active ? 'true' : undefined}
+      aria-label={ariaLabel}
+      onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onActivate(); } }}
+    >
+      {children}
+    </tr>
+  );
+}
+
+/* ===== Feed — clickable alert/event stream ===== */
+interface FeedProps {
+  alerts: Alert[];
+  onSelect?: (a: Alert) => void;
+  flagNew?: boolean;
+}
+
+export function Feed({ alerts, onSelect, flagNew }: FeedProps) {
+  return (
+    <div className="feed" style={{ padding: '4px 8px' }}>
+      {alerts.map((a, i) => (
+        <button
+          key={a.id}
+          type="button"
+          className={`feed__item ${i === 0 && flagNew ? 'is-new' : ''}`.trim()}
+          aria-label={`${a.sev} alert: ${a.rule}, ${a.src} on ${a.host} — open triage`}
+          onClick={() => onSelect && onSelect(a)}
+        >
+          <div className="feed__time">{a.t}</div>
+          <div><Sev level={a.sev}>{a.sev[0].toUpperCase()}</Sev></div>
+          <div>
+            <div className="feed__msg ink">{a.rule}</div>
+            <div className="dim mono" style={{ fontSize: 10 }}>{a.src} · {a.host}</div>
+          </div>
+        </button>
+      ))}
     </div>
   );
 }

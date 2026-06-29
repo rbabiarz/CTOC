@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useMemo } from 'react';
-import { Btn, KPI, Panel, Sev, Spark, BarRow } from '@/components/ui';
+import { Btn, KPI, Panel, Sev, Spark, BarRow, StatusDot, KeyValueList, StepProgress, Table, ClickableRow } from '@/components/ui';
 import { Timeline } from '@/components/kill-chain';
 import { ALERTS, FEED_SOURCES, INCIDENTS, QUEUE, TIMELINE } from '@/lib/mock-data';
 import type { Alert } from '@/lib/types';
@@ -61,7 +61,7 @@ export function ThreatDetectionScreen({  onOpenAlert  }: ScreenProps) {
 
       <div className="row" style={{ gridTemplateColumns: '2fr 1fr', marginBottom: 10 }}>
         <Panel title="Alert queue" sub="newest first · click to triage" flush>
-          <table className="tbl">
+          <Table>
             <thead><tr>
               <th style={{width: 70}}>Time</th>
               <th style={{width: 76}}>Sev</th>
@@ -75,12 +75,10 @@ export function ThreatDetectionScreen({  onOpenAlert  }: ScreenProps) {
             </tr></thead>
             <tbody>
               {filtered.map(a => (
-                <tr
+                <ClickableRow
                   key={a.id}
-                  onClick={() => onOpenAlert?.(a)}
-                  tabIndex={0}
-                  aria-label={`Open triage for ${a.id}, ${a.sev} severity: ${a.rule}`}
-                  onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onOpenAlert?.(a); } }}
+                  onActivate={() => onOpenAlert?.(a)}
+                  ariaLabel={`Open triage for ${a.id}, ${a.sev} severity: ${a.rule}`}
                 >
                   <td className="mono dim">{a.t}</td>
                   <td><Sev level={a.sev} /></td>
@@ -89,12 +87,12 @@ export function ThreatDetectionScreen({  onOpenAlert  }: ScreenProps) {
                   <td className="mono">{a.host}</td>
                   <td className="mono dim">{a.src}</td>
                   <td className="num">{a.conf}</td>
-                  <td className="mono">{a.status === 'open' ? <span style={{color: 'var(--sev-critical)'}}>● OPEN</span> : a.status === 'triage' ? <span style={{color: 'var(--sev-medium-text)'}}>● TRIAGE</span> : <span style={{color: 'var(--sev-resolved)'}}>● {a.status.toUpperCase()}</span>}</td>
+                  <td>{a.status === 'open' ? <StatusDot tone="critical">OPEN</StatusDot> : a.status === 'triage' ? <StatusDot tone="warn">TRIAGE</StatusDot> : <StatusDot tone="ok">{a.status.toUpperCase()}</StatusDot>}</td>
                   <td className="mono dim">{a.assigned}</td>
-                </tr>
+                </ClickableRow>
               ))}
             </tbody>
-          </table>
+          </Table>
         </Panel>
 
         <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
@@ -146,7 +144,7 @@ export function IncidentsScreen({  onOpenAlert  }: ScreenProps) {
 
       <div className="row" style={{ gridTemplateColumns: '1.4fr 1fr', marginBottom: 10 }}>
         <Panel title="Open incidents" sub={`${INCIDENTS.length} active · click for detail`} flush>
-          <table className="tbl">
+          <Table>
             <thead><tr>
               <th style={{width: 78}}>ID</th>
               <th>Title</th>
@@ -159,14 +157,11 @@ export function IncidentsScreen({  onOpenAlert  }: ScreenProps) {
             </tr></thead>
             <tbody>
               {INCIDENTS.map(i => (
-                <tr
+                <ClickableRow
                   key={i.id}
-                  className={selected === i.id ? 'is-active' : ''}
-                  onClick={() => setSelected(i.id)}
-                  tabIndex={0}
-                  aria-current={selected === i.id ? 'true' : undefined}
-                  aria-label={`Show detail for incident ${i.id}, ${i.title}`}
-                  onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setSelected(i.id); } }}
+                  active={selected === i.id}
+                  onActivate={() => setSelected(i.id)}
+                  ariaLabel={`Show detail for incident ${i.id}, ${i.title}`}
                 >
                   <td className="mono">{i.id}</td>
                   <td><span className="ink">{i.title}</span></td>
@@ -176,29 +171,32 @@ export function IncidentsScreen({  onOpenAlert  }: ScreenProps) {
                   <td className="mono dim">{i.lead}</td>
                   <td className="mono">{i.status.toUpperCase()}</td>
                   <td className="mono" style={{ color: i.sla.includes('BREACH') ? 'var(--sev-critical)' : 'var(--color-body)' }}>{i.sla}</td>
-                </tr>
+                </ClickableRow>
               ))}
             </tbody>
-          </table>
+          </Table>
         </Panel>
 
         <Panel title={`${inc.id} · detail`} sub={inc.status}>
-          <dl className="kv" style={{ marginBottom: 10 }}>
-            <dt>TITLE</dt><dd style={{ whiteSpace: 'normal' }}>{inc.title}</dd>
-            <dt>SEVERITY</dt><dd><Sev level={inc.sev} /></dd>
-            <dt>KILL CHAIN</dt><dd>Stage {inc.stage} of 7</dd>
-            <dt>LEAD</dt><dd>{inc.lead}</dd>
-            <dt>ASSETS</dt><dd>{inc.assets} impacted</dd>
-            <dt>OPENED</dt><dd>{inc.opened}</dd>
-            <dt>SLA</dt><dd>{inc.sla}</dd>
-          </dl>
+          <KeyValueList
+            style={{ marginBottom: 10 }}
+            items={[
+              { term: 'TITLE', desc: <span style={{ whiteSpace: 'normal' }}>{inc.title}</span> },
+              { term: 'SEVERITY', desc: <Sev level={inc.sev} /> },
+              { term: 'KILL CHAIN', desc: `Stage ${inc.stage} of 7` },
+              { term: 'LEAD', desc: inc.lead },
+              { term: 'ASSETS', desc: `${inc.assets} impacted` },
+              { term: 'OPENED', desc: inc.opened },
+              { term: 'SLA', desc: inc.sla },
+            ]}
+          />
 
           <div className="dim mono uppr" style={{ marginBottom: 6 }}>Response progress</div>
-          <div className="steps" style={{ marginBottom: 12 }}>
-            {['DETECT','TRIAGE','INVEST','ESCAL','CONTAIN','RESOLVE'].map((s, i) => (
-              <div key={s} className={`steps__step ${i < 4 ? 'done' : ''} ${i === 4 ? 'curr' : ''}`}>{s}</div>
-            ))}
-          </div>
+          <StepProgress
+            style={{ marginBottom: 12 }}
+            steps={['DETECT', 'TRIAGE', 'INVEST', 'ESCAL', 'CONTAIN', 'RESOLVE']}
+            current={4}
+          />
 
           <div className="dim mono uppr" style={{ marginBottom: 6 }}>Recent activity</div>
           <Timeline events={TIMELINE.slice(0, 5)} onSelect={() => onOpenAlert?.(ALERTS[0])} />
@@ -284,7 +282,7 @@ export function WorkloadScreen() {
 
     <div className="row" style={{ gridTemplateColumns: '1.5fr 1fr', marginBottom: 10 }}>
       <Panel title="Analyst queues" sub="open cases · capacity · SLA" flush>
-        <table className="tbl">
+        <Table>
           <thead><tr>
             <th>Analyst</th>
             <th style={{width: 76}} className="num">Open</th>
@@ -301,13 +299,13 @@ export function WorkloadScreen() {
                 <td className="num" style={{ color: q.crit > 1 ? 'var(--sev-critical)' : 'var(--color-body)', fontWeight: q.crit > 1 ? 600 : 400 }}>{q.crit}</td>
                 <td><div className="bar-row__track" style={{ width: 200 }}><div className={`bar-row__fill ${q.util > 90 ? 'crit' : q.util > 80 ? 'high' : ''}`} style={{ width: `${q.util}%` }}></div></div></td>
                 <td className="num">{q.sla}%</td>
-                <td className="mono" style={{ color: q.util > 90 ? 'var(--sev-critical)' : q.sla < 85 ? 'var(--sev-medium-text)' : 'var(--sev-resolved)' }}>
-                  {q.util > 90 ? '● OVERLOAD' : q.sla < 85 ? '● AT RISK' : '● OK'}
+                <td>
+                  {q.util > 90 ? <StatusDot tone="critical">OVERLOAD</StatusDot> : q.sla < 85 ? <StatusDot tone="warn">AT RISK</StatusDot> : <StatusDot tone="ok">OK</StatusDot>}
                 </td>
               </tr>
             ))}
           </tbody>
-        </table>
+        </Table>
       </Panel>
 
       <ShiftHeatmap />
@@ -329,11 +327,13 @@ export function WorkloadScreen() {
         <BarRow label="C2 beacon" value={31} max={100} severity="high" />
       </Panel>
       <Panel title="Burnout signals" sub="watchlist">
-        <dl className="kv">
-          <dt>R. PATEL</dt><dd>14 open · 94% util · 11h on-shift</dd>
-          <dt>A. WU</dt><dd>11 open · 82% util · OT requested</dd>
-          <dt>S. LIN</dt><dd>SLA dip noted (96→89%)</dd>
-        </dl>
+        <KeyValueList
+          items={[
+            { term: 'R. PATEL', desc: '14 open · 94% util · 11h on-shift' },
+            { term: 'A. WU', desc: '11 open · 82% util · OT requested' },
+            { term: 'S. LIN', desc: 'SLA dip noted (96→89%)' },
+          ]}
+        />
         <div style={{ marginTop: 10 }}>
           <Btn size="xs" variant="primary">CALL T1 REINFORCEMENT</Btn>
         </div>
@@ -363,7 +363,7 @@ export function AutomationScreen() {
 
     <div className="row" style={{ gridTemplateColumns: '1.6fr 1fr', marginBottom: 10 }}>
       <Panel title="Playbook execution log" sub="last 20 runs · click for trace" flush>
-        <table className="tbl">
+        <Table>
           <thead><tr><th style={{width:74}}>Time</th><th style={{width:100}}>Playbook</th><th>Trigger</th><th style={{width:90}}>Target</th><th style={{width:60}} className="num">Actions</th><th style={{width:64}} className="num">Time</th><th style={{width:80}}>Status</th></tr></thead>
           <tbody>
             {[
@@ -383,18 +383,20 @@ export function AutomationScreen() {
                 <td className="mono">{r[3]}</td>
                 <td className="num">{r[4]}</td>
                 <td className="num">{r[5]}</td>
-                <td className="mono" style={{ color: r[6] === 'SUCCESS' ? 'var(--sev-resolved)' : r[6] === 'PARTIAL' ? 'var(--sev-medium-text)' : 'var(--sev-critical)' }}>● {r[6]}</td>
+                <td><StatusDot tone={r[6] === 'SUCCESS' ? 'ok' : r[6] === 'PARTIAL' ? 'warn' : 'critical'}>{r[6]}</StatusDot></td>
               </tr>
             ))}
           </tbody>
-        </table>
+        </Table>
       </Panel>
 
       <Panel title="Failure analysis" sub="last 24h failed runs">
-        <dl className="kv">
-          <dt>PB-VULN-07</dt><dd>EDGE-LB-A reboot blocked by change window</dd>
-          <dt>PB-FRAUD-31</dt><dd>Step 4 ledger lock timeout (partial OK)</dd>
-        </dl>
+        <KeyValueList
+          items={[
+            { term: 'PB-VULN-07', desc: 'EDGE-LB-A reboot blocked by change window' },
+            { term: 'PB-FRAUD-31', desc: 'Step 4 ledger lock timeout (partial OK)' },
+          ]}
+        />
         <div style={{ marginTop: 10 }} className="dim mono uppr">Containment confidence</div>
         <BarRow label="Identity actions" value={98} max={100} severity="low" suffix="%" />
         <BarRow label="Endpoint isolation" value={94} max={100} severity="low" suffix="%" />
@@ -405,7 +407,7 @@ export function AutomationScreen() {
     </div>
 
     <Panel title="Playbook health · top 12" flush>
-      <table className="tbl">
+      <Table>
         <thead><tr><th style={{width:110}}>Playbook</th><th>Use case</th><th style={{width:80}} className="num">Runs/24h</th><th style={{width:90}} className="num">Success %</th><th style={{width:90}} className="num">Mean time</th><th>Trend</th><th style={{width:80}}>State</th></tr></thead>
         <tbody>
           {[
@@ -425,11 +427,11 @@ export function AutomationScreen() {
               <td className="num">{r[3]}%</td>
               <td className="num">{r[4]}</td>
               <td><Spark data={r[5] as number[]} width={100} height={20} /></td>
-              <td className="mono" style={{ color: r[6] === 'OK' ? 'var(--sev-resolved)' : r[6] === 'DEGRADED' ? 'var(--sev-medium-text)' : 'var(--sev-critical)' }}>● {r[6]}</td>
+              <td><StatusDot tone={r[6] === 'OK' ? 'ok' : r[6] === 'DEGRADED' ? 'warn' : 'critical'}>{String(r[6])}</StatusDot></td>
             </tr>
           ))}
         </tbody>
-      </table>
+      </Table>
     </Panel>
   </div>
 );
@@ -454,7 +456,7 @@ export function MoneyScreen() {
 
     <div className="row" style={{ gridTemplateColumns: '1.6fr 1fr', marginBottom: 10 }}>
       <Panel title="Held transactions" sub="awaiting Fraud Ops review" flush>
-        <table className="tbl">
+        <Table>
           <thead><tr><th style={{width:96}}>Ledger</th><th style={{width:90}} className="num">Amount</th><th>Corridor</th><th style={{width:120}}>Counterparty</th><th style={{width:64}} className="num">Score</th><th style={{width:90}}>Flag</th><th>Held by</th></tr></thead>
           <tbody>
             {[
@@ -477,7 +479,7 @@ export function MoneyScreen() {
               </tr>
             ))}
           </tbody>
-        </table>
+        </Table>
       </Panel>
 
       <Panel title="Corridor risk · USD-denominated">
@@ -494,7 +496,7 @@ export function MoneyScreen() {
     </div>
 
     <Panel title="Anomaly clusters · ML fusion" flush>
-      <table className="tbl">
+      <Table>
         <thead><tr><th style={{width:90}}>Cluster</th><th>Pattern</th><th style={{width:80}} className="num">Members</th><th style={{width:90}} className="num">Avg amount</th><th style={{width:64}} className="num">Conf</th><th style={{width:110}}>Detector</th><th style={{width:80}}>Action</th></tr></thead>
         <tbody>
           <tr><td className="mono">CL-1442</td><td>Coordinated wires · 11 ledgers · EMEA corridor · 14m window</td><td className="num">11</td><td className="num">$382K</td><td className="num">94%</td><td className="mono dim">graph-iso v2</td><td><Btn size="xs" variant="danger">HOLD</Btn></td></tr>
@@ -502,7 +504,7 @@ export function MoneyScreen() {
           <tr><td className="mono">CL-1438</td><td>Mule-flow signature · 3-hop pattern · checking → savings → wire</td><td className="num">17</td><td className="num">$24K</td><td className="num">76%</td><td className="mono dim">graph-iso v2</td><td><Btn size="xs">REVIEW</Btn></td></tr>
           <tr><td className="mono">CL-1431</td><td>Card-not-present spike · ATO indicators · 4 BIN ranges</td><td className="num">182</td><td className="num">$840</td><td className="num">71%</td><td className="mono dim">xgb-fraud v6</td><td><Btn size="xs">REVIEW</Btn></td></tr>
         </tbody>
-      </table>
+      </Table>
     </Panel>
   </div>
   );
@@ -576,7 +578,7 @@ export function FraudScreen() {
         <Spark data={[42,38,44,52,68,84,96,128,162,142,184,168,128,142,162,142,138,118,108,92,84,76,68,62]} width={280} height={48} fill="var(--color-ink)" />
       </Panel>
       <Panel title="High-risk customer queue" sub="auto-prioritized">
-        <table className="tbl">
+        <Table>
           <thead><tr><th style={{width:80}}>Cust ID</th><th>Last event</th><th className="num" style={{width:48}}>Score</th></tr></thead>
           <tbody>
             <tr><td className="mono">C-4421984</td><td>3 wire attempts, MFA bypass</td><td className="num" style={{color:'var(--sev-critical)',fontWeight:600}}>96</td></tr>
@@ -587,7 +589,7 @@ export function FraudScreen() {
             <tr><td className="mono">C-4421774</td><td>Mule path detected</td><td className="num">74</td></tr>
             <tr><td className="mono">C-4421702</td><td>Geo + device mismatch</td><td className="num">71</td></tr>
           </tbody>
-        </table>
+        </Table>
       </Panel>
     </div>
 

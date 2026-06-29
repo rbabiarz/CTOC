@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect, useMemo } from 'react';
-import { Btn, KPI, Panel, Sev, BarRow } from '@/components/ui';
+import { Btn, KPI, Panel, Sev, BarRow, Feed, KeyValueList, Table, ClickableRow } from '@/components/ui';
 import {
   ASSETS,
   EDGES,
@@ -270,7 +270,7 @@ export function KillChainScreen({ onOpenAlert, onOpenCampaign }: KillChainScreen
             <Btn size="xs">FILTER</Btn>
           </>
         } flush>
-          <table className="tbl">
+          <Table>
             <thead>
               <tr>
                 <th style={{ width: 80 }}>ID</th>
@@ -285,14 +285,11 @@ export function KillChainScreen({ onOpenAlert, onOpenCampaign }: KillChainScreen
             </thead>
             <tbody>
               {CAMPAIGNS.map(c => (
-                <tr
+                <ClickableRow
                   key={c.id}
-                  className={activeCampaign === c.id ? 'is-active' : ''}
-                  onClick={() => setActiveCampaign(c.id)}
-                  tabIndex={0}
-                  aria-current={activeCampaign === c.id ? 'true' : undefined}
-                  aria-label={`Select campaign ${c.id}, ${c.name}`}
-                  onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setActiveCampaign(c.id); } }}
+                  active={activeCampaign === c.id}
+                  onActivate={() => setActiveCampaign(c.id)}
+                  ariaLabel={`Select campaign ${c.id}, ${c.name}`}
                 >
                   <td className="mono">{c.id}</td>
                   <td><span className="ink">{c.name}</span><div className="dim" style={{ fontSize: 10.5 }}>{c.desc}</div></td>
@@ -302,10 +299,10 @@ export function KillChainScreen({ onOpenAlert, onOpenCampaign }: KillChainScreen
                   <td className="num">{Math.round(c.confidence * 100)}%</td>
                   <td className="num">{c.assets}</td>
                   <td className="num">{c.mttd}</td>
-                </tr>
+                </ClickableRow>
               ))}
             </tbody>
-          </table>
+          </Table>
         </Panel>
 
         <Panel title="Blast radius · topology" sub={`${campaignDetail.id} · ${campaignDetail.name}`} toolbar={
@@ -354,24 +351,7 @@ export function KillChainScreen({ onOpenAlert, onOpenCampaign }: KillChainScreen
             <span className="mono" style={{ fontSize: 10, color: 'var(--color-success)', fontWeight: 600 }}>LIVE</span>
           </span>
         } flush>
-          <div className="feed" style={{ padding: '4px 8px' }}>
-            {feedAlerts.map((a, i) => (
-              <button
-                key={a.id}
-                type="button"
-                className={`feed__item ${i === 0 && tickId > 0 ? 'is-new' : ''}`}
-                aria-label={`${a.sev} alert: ${a.rule}, ${a.src} on ${a.host} — open triage`}
-                onClick={() => onOpenAlert && onOpenAlert(a)}
-              >
-                <div className="feed__time">{a.t}</div>
-                <div><Sev level={a.sev}>{a.sev[0].toUpperCase()}</Sev></div>
-                <div>
-                  <div className="feed__msg ink">{a.rule}</div>
-                  <div className="dim mono" style={{ fontSize: 10 }}>{a.src} · {a.host}</div>
-                </div>
-              </button>
-            ))}
-          </div>
+          <Feed alerts={feedAlerts} onSelect={(a) => onOpenAlert && onOpenAlert(a)} flagNew={tickId > 0} />
         </Panel>
 
         <Panel title="Signals" sub="top contributors">
@@ -384,12 +364,14 @@ export function KillChainScreen({ onOpenAlert, onOpenCampaign }: KillChainScreen
           <BarRow label="Fraud/Acme" value={14} max={100} severity="low" suffix="%" />
 
           <div style={{ marginTop: 12, marginBottom: 6 }} className="dim mono uppr">Top IOCs · last hr</div>
-          <dl className="kv">
-            <dt>IP</dt><dd>185.244.31.0/24</dd>
-            <dt>DOMAIN</dt><dd>cdn-msft-update[.]com</dd>
-            <dt>HASH</dt><dd>a1c4..f7e9 (loader.dll)</dd>
-            <dt>CERT-SHA1</dt><dd>3c91..0b22 (revoked)</dd>
-          </dl>
+          <KeyValueList
+            items={[
+              { term: 'IP', desc: '185.244.31.0/24' },
+              { term: 'DOMAIN', desc: 'cdn-msft-update[.]com' },
+              { term: 'HASH', desc: 'a1c4..f7e9 (loader.dll)' },
+              { term: 'CERT-SHA1', desc: '3c91..0b22 (revoked)' },
+            ]}
+          />
         </Panel>
       </div>
     </div>

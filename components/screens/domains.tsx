@@ -1,7 +1,7 @@
 'use client';
 
 import { Fragment, useState, useEffect } from 'react';
-import { Btn, KPI, Panel, Sev, Spark, BarRow } from '@/components/ui';
+import { Btn, KPI, Panel, Sev, Spark, BarRow, StatusDot, KeyValueList, Table } from '@/components/ui';
 
 /* ---- Contrast-aware risk heatmap (WCAG 1.4.3) ----
    Cell text color is chosen as pure black or white against the *blended* cell
@@ -114,18 +114,18 @@ export function DLPScreen() {
 
     <div className="row" style={{ gridTemplateColumns: '1.6fr 1fr', marginBottom: 10 }}>
       <Panel title="Recent violations" sub="critical channels first" flush>
-        <table className="tbl">
+        <Table>
           <thead><tr><th style={{width:74}}>Time</th><th style={{width:60}}>Sev</th><th>User · channel</th><th>Content classification</th><th style={{width:70}} className="num">Records</th><th style={{width:80}}>Channel</th><th style={{width:90}}>Action</th></tr></thead>
           <tbody>
-            <tr><td className="mono dim">14:28:55</td><td><Sev level="critical" /></td><td>j.merrick@cti.corp · personal Gmail</td><td>SSN · batch upload</td><td className="num">412</td><td className="mono">EMAIL</td><td className="mono" style={{color:'var(--sev-resolved)'}}>● BLOCKED</td></tr>
-            <tr><td className="mono dim">14:24:12</td><td><Sev level="high" /></td><td>k.santos@cti.corp · ChatGPT</td><td>Customer PII + acct numbers</td><td className="num">86</td><td className="mono">GENAI</td><td className="mono" style={{color:'var(--sev-medium-text)'}}>● HELD</td></tr>
-            <tr><td className="mono dim">14:18:48</td><td><Sev level="high" /></td><td>r.duval@cti.corp · USB device</td><td>Source code · payment-svc</td><td className="num">—</td><td className="mono">USB</td><td className="mono" style={{color:'var(--sev-resolved)'}}>● BLOCKED</td></tr>
-            <tr><td className="mono dim">14:11:24</td><td><Sev level="medium" /></td><td>a.peng@cti.corp · OneDrive ext</td><td>Internal docs · M&A draft</td><td className="num">14</td><td className="mono">CLOUD</td><td className="mono" style={{color:'var(--sev-medium-text)'}}>● HELD</td></tr>
-            <tr><td className="mono dim">14:08:02</td><td><Sev level="medium" /></td><td>m.cox@cti.corp · print job</td><td>Compliance audit packet</td><td className="num">38</td><td className="mono">PRINT</td><td className="mono" style={{color:'var(--sev-resolved)'}}>● BLOCKED</td></tr>
-            <tr><td className="mono dim">13:58:11</td><td><Sev level="critical" /></td><td>(svc-acct) · S3 → external</td><td>PCI · cardholder data</td><td className="num">2,818</td><td className="mono">CLOUD</td><td className="mono" style={{color:'var(--sev-resolved)'}}>● BLOCKED</td></tr>
-            <tr><td className="mono dim">13:44:38</td><td><Sev level="low" /></td><td>n.aoki@cti.corp · Slack DM</td><td>Internal-only label</td><td className="num">1</td><td className="mono">CHAT</td><td className="mono dim">● WARNED</td></tr>
+            <tr><td className="mono dim">14:28:55</td><td><Sev level="critical" /></td><td>j.merrick@cti.corp · personal Gmail</td><td>SSN · batch upload</td><td className="num">412</td><td className="mono">EMAIL</td><td><StatusDot tone="ok">BLOCKED</StatusDot></td></tr>
+            <tr><td className="mono dim">14:24:12</td><td><Sev level="high" /></td><td>k.santos@cti.corp · ChatGPT</td><td>Customer PII + acct numbers</td><td className="num">86</td><td className="mono">GENAI</td><td><StatusDot tone="warn">HELD</StatusDot></td></tr>
+            <tr><td className="mono dim">14:18:48</td><td><Sev level="high" /></td><td>r.duval@cti.corp · USB device</td><td>Source code · payment-svc</td><td className="num">—</td><td className="mono">USB</td><td><StatusDot tone="ok">BLOCKED</StatusDot></td></tr>
+            <tr><td className="mono dim">14:11:24</td><td><Sev level="medium" /></td><td>a.peng@cti.corp · OneDrive ext</td><td>Internal docs · M&A draft</td><td className="num">14</td><td className="mono">CLOUD</td><td><StatusDot tone="warn">HELD</StatusDot></td></tr>
+            <tr><td className="mono dim">14:08:02</td><td><Sev level="medium" /></td><td>m.cox@cti.corp · print job</td><td>Compliance audit packet</td><td className="num">38</td><td className="mono">PRINT</td><td><StatusDot tone="ok">BLOCKED</StatusDot></td></tr>
+            <tr><td className="mono dim">13:58:11</td><td><Sev level="critical" /></td><td>(svc-acct) · S3 → external</td><td>PCI · cardholder data</td><td className="num">2,818</td><td className="mono">CLOUD</td><td><StatusDot tone="ok">BLOCKED</StatusDot></td></tr>
+            <tr><td className="mono dim">13:44:38</td><td><Sev level="low" /></td><td>n.aoki@cti.corp · Slack DM</td><td>Internal-only label</td><td className="num">1</td><td className="mono">CHAT</td><td><StatusDot tone="muted">WARNED</StatusDot></td></tr>
           </tbody>
-        </table>
+        </Table>
       </Panel>
 
       <Panel title="Top exposed classifiers" sub="violation count · 7d">
@@ -136,11 +136,13 @@ export function DLPScreen() {
         <BarRow label="M&A / financials" value={31} max={300} severity="med" />
         <BarRow label="Internal-only" value={188} max={300} severity="low" />
         <div className="dim mono uppr" style={{marginTop:10, fontSize:9.5}}>Channels at risk</div>
-        <dl className="kv">
-          <dt>GENAI (LLM)</dt><dd>+148% MoM · 6 LLMs in scope</dd>
-          <dt>EMAIL → ext.</dt><dd>steady · 4 repeat senders</dd>
-          <dt>USB</dt><dd>policy violation rate 3.2%</dd>
-        </dl>
+        <KeyValueList
+          items={[
+            { term: 'GENAI (LLM)', desc: '+148% MoM · 6 LLMs in scope' },
+            { term: 'EMAIL → ext.', desc: 'steady · 4 repeat senders' },
+            { term: 'USB', desc: 'policy violation rate 3.2%' },
+          ]}
+        />
       </Panel>
     </div>
 
@@ -160,7 +162,7 @@ export function DLPScreen() {
         <BarRow label="Strategy / IP" value={18} max={100} severity="med" />
       </Panel>
       <Panel title="Repeat offenders" sub="14-day window">
-        <table className="tbl">
+        <Table>
           <thead><tr><th>User</th><th>Dept</th><th className="num" style={{width:64}}>Events</th><th>Last channel</th><th className="num" style={{width:60}}>Risk</th></tr></thead>
           <tbody>
             <tr><td>j.merrick</td><td className="dim">Treasury</td><td className="num">14</td><td className="mono">EMAIL</td><td className="num" style={{color:'var(--sev-critical)',fontWeight:600}}>92</td></tr>
@@ -170,7 +172,7 @@ export function DLPScreen() {
             <tr><td>m.cox</td><td className="dim">Compliance</td><td className="num">5</td><td className="mono">PRINT</td><td className="num">52</td></tr>
             <tr><td>n.aoki</td><td className="dim">Marketing</td><td className="num">4</td><td className="mono">CHAT</td><td className="num">41</td></tr>
           </tbody>
-        </table>
+        </Table>
       </Panel>
     </div>
   </div>
@@ -228,7 +230,7 @@ export function IntelScreen() {
       </Panel>
 
       <Panel title="Tracked actors" sub="recently active" flush>
-        <table className="tbl">
+        <Table>
           <thead><tr><th>Actor</th><th>Type</th><th>Motivation</th><th className="num" style={{width:60}}>Active</th></tr></thead>
           <tbody>
             <tr><td><span className="ink">APT-441</span> <span className="dim mono">Nostromo</span></td><td className="mono dim">Nation</td><td>Espionage / banking</td><td className="num" style={{color:'var(--sev-critical)'}}>HOT</td></tr>
@@ -239,36 +241,38 @@ export function IntelScreen() {
             <tr><td><span className="ink">HACKTIV-12</span></td><td className="mono dim">Activist</td><td>Defacement</td><td className="num dim">low</td></tr>
             <tr><td><span className="ink">INSIDER-tier</span></td><td className="mono dim">Internal</td><td>Mixed</td><td className="num">+</td></tr>
           </tbody>
-        </table>
+        </Table>
       </Panel>
     </div>
 
     <div className="row" style={{ gridTemplateColumns: '1fr 1fr 1fr', marginBottom: 0 }}>
       <Panel title="Feed health">
-        <table className="tbl" style={{ fontSize: 11 }}>
+        <Table style={{ fontSize: 11 }}>
           <thead><tr><th>Feed</th><th className="num">Age</th><th>Status</th></tr></thead>
           <tbody>
-            <tr><td>MISP-core</td><td className="num">2m</td><td className="mono" style={{color:'var(--sev-resolved)'}}>● OK</td></tr>
-            <tr><td>CrowdStrike</td><td className="num">3m</td><td className="mono" style={{color:'var(--sev-resolved)'}}>● OK</td></tr>
-            <tr><td>Mandiant</td><td className="num">6m</td><td className="mono" style={{color:'var(--sev-resolved)'}}>● OK</td></tr>
-            <tr><td>FS-ISAC</td><td className="num">11m</td><td className="mono" style={{color:'var(--sev-resolved)'}}>● OK</td></tr>
-            <tr><td>Internal honey</td><td className="num">1m</td><td className="mono" style={{color:'var(--sev-resolved)'}}>● OK</td></tr>
-            <tr><td>OTX AlienVault</td><td className="num">28m</td><td className="mono" style={{color:'var(--sev-medium-text)'}}>● STALE</td></tr>
-            <tr><td>Recorded Future</td><td className="num">42m</td><td className="mono" style={{color:'var(--sev-critical)'}}>● BROKEN</td></tr>
+            <tr><td>MISP-core</td><td className="num">2m</td><td><StatusDot tone="ok">OK</StatusDot></td></tr>
+            <tr><td>CrowdStrike</td><td className="num">3m</td><td><StatusDot tone="ok">OK</StatusDot></td></tr>
+            <tr><td>Mandiant</td><td className="num">6m</td><td><StatusDot tone="ok">OK</StatusDot></td></tr>
+            <tr><td>FS-ISAC</td><td className="num">11m</td><td><StatusDot tone="ok">OK</StatusDot></td></tr>
+            <tr><td>Internal honey</td><td className="num">1m</td><td><StatusDot tone="ok">OK</StatusDot></td></tr>
+            <tr><td>OTX AlienVault</td><td className="num">28m</td><td><StatusDot tone="warn">STALE</StatusDot></td></tr>
+            <tr><td>Recorded Future</td><td className="num">42m</td><td><StatusDot tone="critical">BROKEN</StatusDot></td></tr>
           </tbody>
-        </table>
+        </Table>
       </Panel>
       <Panel title="Emerging IOCs" sub="last 60m · prioritized">
-        <dl className="kv">
-          <dt>IP</dt><dd>185.244.31.14</dd>
-          <dt>IP</dt><dd>91.218.114.0/22</dd>
-          <dt>DOMAIN</dt><dd>cdn-msft-update[.]com</dd>
-          <dt>DOMAIN</dt><dd>ledger-portal[.]ru</dd>
-          <dt>SHA256</dt><dd>a1c4..f7e9 (loader.dll)</dd>
-          <dt>SHA256</dt><dd>be32..118a (backdoor)</dd>
-          <dt>CERT</dt><dd>SHA1 3c91..0b22 (revoked)</dd>
-          <dt>TTP</dt><dd>T1059.001 PowerShell + AMSI bypass</dd>
-        </dl>
+        <KeyValueList
+          items={[
+            { term: 'IP', desc: '185.244.31.14' },
+            { term: 'IP', desc: '91.218.114.0/22' },
+            { term: 'DOMAIN', desc: 'cdn-msft-update[.]com' },
+            { term: 'DOMAIN', desc: 'ledger-portal[.]ru' },
+            { term: 'SHA256', desc: 'a1c4..f7e9 (loader.dll)' },
+            { term: 'SHA256', desc: 'be32..118a (backdoor)' },
+            { term: 'CERT', desc: 'SHA1 3c91..0b22 (revoked)' },
+            { term: 'TTP', desc: 'T1059.001 PowerShell + AMSI bypass' },
+          ]}
+        />
       </Panel>
       <Panel title="Coverage vs APT-441" sub="based on observed TTPs">
         <BarRow label="Detection" value={88} max={100} severity="low" suffix="%" />
@@ -303,7 +307,7 @@ export function VulnScreen() {
 
     <div className="row" style={{ gridTemplateColumns: '1.6fr 1fr', marginBottom: 10 }}>
       <Panel title="KEV-catalog · open exposures" sub="known-exploited vulns active in env" flush>
-        <table className="tbl">
+        <Table>
           <thead><tr><th style={{width:120}}>CVE</th><th>Product · component</th><th style={{width:60}} className="num">CVSS</th><th style={{width:70}}>EPSS</th><th style={{width:80}} className="num">Assets</th><th>SLA</th><th style={{width:80}}>State</th></tr></thead>
           <tbody>
             <tr><td className="mono">CVE-2026-28114</td><td>Edge LB · auth bypass</td><td className="num" style={{color:'var(--sev-critical)',fontWeight:600}}>9.8</td><td className="mono">0.94</td><td className="num">14</td><td className="mono" style={{color:'var(--sev-critical)'}}>06:14 left</td><td className="mono" style={{color:'var(--sev-medium-text)'}}>● PATCHING</td></tr>
@@ -313,7 +317,7 @@ export function VulnScreen() {
             <tr><td className="mono">CVE-2025-37721</td><td>Citrix NetScaler</td><td className="num" style={{color:'var(--sev-high-text)',fontWeight:600}}>8.5</td><td className="mono">0.84</td><td className="num">8</td><td className="mono">6d 22h</td><td className="mono" style={{color:'var(--sev-resolved)'}}>● MITIGATED</td></tr>
             <tr><td className="mono">CVE-2025-31920</td><td>VMware ESXi</td><td className="num" style={{color:'var(--sev-high-text)',fontWeight:600}}>8.3</td><td className="mono">0.62</td><td className="num">28</td><td className="mono">12d</td><td className="mono dim">● EXCEPTION</td></tr>
           </tbody>
-        </table>
+        </Table>
       </Panel>
 
       <RiskHeatmap />
@@ -356,17 +360,17 @@ export function InsiderScreen() {
 
     <div className="row" style={{ gridTemplateColumns: '1.4fr 1fr', marginBottom: 10 }}>
       <Panel title="High-risk users · UEBA" sub="behavioral z-score ≥ 3.5" flush>
-        <table className="tbl">
+        <Table>
           <thead><tr><th style={{width:90}}>User</th><th>Anomalies</th><th>Dept</th><th className="num" style={{width:64}}>Score</th><th>Status</th></tr></thead>
           <tbody>
-            <tr><td>j.merrick</td><td>Off-hours bulk access · 14× normal · printed M&A docs · personal email</td><td className="dim">Treasury</td><td className="num" style={{color:'var(--sev-critical)',fontWeight:600}}>94</td><td className="mono" style={{color:'var(--sev-critical)'}}>● INVESTIGATING</td></tr>
-            <tr><td>(svc-treasury-3)</td><td>Wire ledger reads outside role; impossible-travel session reuse</td><td className="dim">Service</td><td className="num" style={{color:'var(--sev-critical)',fontWeight:600}}>91</td><td className="mono" style={{color:'var(--sev-critical)'}}>● HOLD</td></tr>
-            <tr><td>r.duval</td><td>USB events 12× peer · 4 source-code repos · resignation flag (HR)</td><td className="dim">Engineering</td><td className="num" style={{color:'var(--sev-high-text)',fontWeight:600}}>88</td><td className="mono" style={{color:'var(--sev-high-text)'}}>● WATCH</td></tr>
-            <tr><td>a.peng</td><td>External cloud share spike · M&A keyword cluster</td><td className="dim">Corp Dev</td><td className="num" style={{color:'var(--sev-high-text)',fontWeight:600}}>82</td><td className="mono" style={{color:'var(--sev-high-text)'}}>● WATCH</td></tr>
-            <tr><td>k.santos</td><td>Customer record lookups outside normal portfolio</td><td className="dim">Cust. Ops</td><td className="num" style={{color:'var(--sev-medium-text)',fontWeight:600}}>74</td><td className="mono dim">● BASELINE</td></tr>
-            <tr><td>m.cox</td><td>Off-hours compliance audit pulls</td><td className="dim">Compliance</td><td className="num">68</td><td className="mono dim">● BASELINE</td></tr>
+            <tr><td>j.merrick</td><td>Off-hours bulk access · 14× normal · printed M&A docs · personal email</td><td className="dim">Treasury</td><td className="num" style={{color:'var(--sev-critical)',fontWeight:600}}>94</td><td><StatusDot tone="critical">INVESTIGATING</StatusDot></td></tr>
+            <tr><td>(svc-treasury-3)</td><td>Wire ledger reads outside role; impossible-travel session reuse</td><td className="dim">Service</td><td className="num" style={{color:'var(--sev-critical)',fontWeight:600}}>91</td><td><StatusDot tone="critical">HOLD</StatusDot></td></tr>
+            <tr><td>r.duval</td><td>USB events 12× peer · 4 source-code repos · resignation flag (HR)</td><td className="dim">Engineering</td><td className="num" style={{color:'var(--sev-high-text)',fontWeight:600}}>88</td><td><StatusDot tone="high">WATCH</StatusDot></td></tr>
+            <tr><td>a.peng</td><td>External cloud share spike · M&A keyword cluster</td><td className="dim">Corp Dev</td><td className="num" style={{color:'var(--sev-high-text)',fontWeight:600}}>82</td><td><StatusDot tone="high">WATCH</StatusDot></td></tr>
+            <tr><td>k.santos</td><td>Customer record lookups outside normal portfolio</td><td className="dim">Cust. Ops</td><td className="num" style={{color:'var(--sev-medium-text)',fontWeight:600}}>74</td><td><StatusDot tone="muted">BASELINE</StatusDot></td></tr>
+            <tr><td>m.cox</td><td>Off-hours compliance audit pulls</td><td className="dim">Compliance</td><td className="num">68</td><td><StatusDot tone="muted">BASELINE</StatusDot></td></tr>
           </tbody>
-        </table>
+        </Table>
       </Panel>
 
       <Panel title="Anomaly types" sub="distribution · 14d">
@@ -430,18 +434,18 @@ export function TravelScreen() {
 
     <div className="row" style={{ gridTemplateColumns: '1fr 1fr', marginBottom: 10 }}>
       <Panel title="Active travel · VIPs in motion" sub={'last 24h'} flush>
-        <table className="tbl">
+        <Table>
           <thead><tr><th>Exec</th><th>Itinerary</th><th>Risk</th><th>Device</th><th>Status</th></tr></thead>
           <tbody>
-            <tr><td><span className="ink">CEO · A. Hellman</span></td><td>JFK → LHR → DXB</td><td><Sev level="medium" /></td><td className="mono dim">LOANER #A114</td><td className="mono" style={{color:'var(--sev-resolved)'}}>● CLEAN</td></tr>
-            <tr><td><span className="ink">CFO · M. Patel</span></td><td>JFK → HKG</td><td><Sev level="high" /></td><td className="mono dim">LOANER #A118</td><td className="mono" style={{color:'var(--sev-medium-text)'}}>● MONITORING</td></tr>
-            <tr><td><span className="ink">CIO · D. Vance</span></td><td>JFK → BER</td><td><Sev level="low" /></td><td className="mono dim">PRIMARY (hardened)</td><td className="mono" style={{color:'var(--sev-resolved)'}}>● CLEAN</td></tr>
-            <tr><td><span className="ink">EVP IB · S. Khoury</span></td><td>JFK → IST</td><td><Sev level="high" /></td><td className="mono dim">LOANER #A124</td><td className="mono" style={{color:'var(--sev-medium-text)'}}>● MONITORING</td></tr>
-            <tr><td><span className="ink">GC · R. Imai</span></td><td>NRT → SFO</td><td><Sev level="low" /></td><td className="mono dim">PRIMARY</td><td className="mono" style={{color:'var(--sev-resolved)'}}>● CLEAN</td></tr>
-            <tr><td><span className="ink">EVP Treas · V. Lund</span></td><td>SFO → SIN</td><td><Sev level="medium" /></td><td className="mono dim">LOANER #A129</td><td className="mono" style={{color:'var(--sev-resolved)'}}>● CLEAN</td></tr>
-            <tr><td><span className="ink">CISO · J. Brennan</span></td><td>JFK → TLV</td><td><Sev level="critical" /></td><td className="mono dim">LOANER #A131</td><td className="mono" style={{color:'var(--sev-critical)'}}>● ALERT</td></tr>
+            <tr><td><span className="ink">CEO · A. Hellman</span></td><td>JFK → LHR → DXB</td><td><Sev level="medium" /></td><td className="mono dim">LOANER #A114</td><td><StatusDot tone="ok">CLEAN</StatusDot></td></tr>
+            <tr><td><span className="ink">CFO · M. Patel</span></td><td>JFK → HKG</td><td><Sev level="high" /></td><td className="mono dim">LOANER #A118</td><td><StatusDot tone="warn">MONITORING</StatusDot></td></tr>
+            <tr><td><span className="ink">CIO · D. Vance</span></td><td>JFK → BER</td><td><Sev level="low" /></td><td className="mono dim">PRIMARY (hardened)</td><td><StatusDot tone="ok">CLEAN</StatusDot></td></tr>
+            <tr><td><span className="ink">EVP IB · S. Khoury</span></td><td>JFK → IST</td><td><Sev level="high" /></td><td className="mono dim">LOANER #A124</td><td><StatusDot tone="warn">MONITORING</StatusDot></td></tr>
+            <tr><td><span className="ink">GC · R. Imai</span></td><td>NRT → SFO</td><td><Sev level="low" /></td><td className="mono dim">PRIMARY</td><td><StatusDot tone="ok">CLEAN</StatusDot></td></tr>
+            <tr><td><span className="ink">EVP Treas · V. Lund</span></td><td>SFO → SIN</td><td><Sev level="medium" /></td><td className="mono dim">LOANER #A129</td><td><StatusDot tone="ok">CLEAN</StatusDot></td></tr>
+            <tr><td><span className="ink">CISO · J. Brennan</span></td><td>JFK → TLV</td><td><Sev level="critical" /></td><td className="mono dim">LOANER #A131</td><td><StatusDot tone="critical">ALERT</StatusDot></td></tr>
           </tbody>
-        </table>
+        </Table>
       </Panel>
 
       <Panel title="Geographic risk overlay" sub="current destinations" flush>
@@ -473,18 +477,22 @@ export function TravelScreen() {
 
     <Panel title="EXEC-DV-318 · Active incident" sub="J. Brennan (CISO) · TLV · device" >
       <div className="grid-3" style={{ gap: 12 }}>
-        <dl className="kv">
-          <dt>SUBJECT</dt><dd>J. Brennan, CISO</dd>
-          <dt>LOCATION</dt><dd>Tel Aviv (TLV)</dd>
-          <dt>RISK TIER</dt><dd>Tier-1 (geopolitical)</dd>
-          <dt>DEVICE</dt><dd>LOANER #A131 (eFuse-locked)</dd>
-        </dl>
-        <dl className="kv">
-          <dt>DETECTION</dt><dd>14:08:11 · Unusual cellular hand-off + cert pinning failure</dd>
-          <dt>SUSPECTED</dt><dd>SSL interception · hostile-network MITM</dd>
-          <dt>MITIGATION</dt><dd>Auto-revoked sessions, MFA forced, traffic locked to VPN</dd>
-          <dt>STATUS</dt><dd style={{color:'var(--sev-critical)'}}>● Monitoring</dd>
-        </dl>
+        <KeyValueList
+          items={[
+            { term: 'SUBJECT', desc: 'J. Brennan, CISO' },
+            { term: 'LOCATION', desc: 'Tel Aviv (TLV)' },
+            { term: 'RISK TIER', desc: 'Tier-1 (geopolitical)' },
+            { term: 'DEVICE', desc: 'LOANER #A131 (eFuse-locked)' },
+          ]}
+        />
+        <KeyValueList
+          items={[
+            { term: 'DETECTION', desc: '14:08:11 · Unusual cellular hand-off + cert pinning failure' },
+            { term: 'SUSPECTED', desc: 'SSL interception · hostile-network MITM' },
+            { term: 'MITIGATION', desc: 'Auto-revoked sessions, MFA forced, traffic locked to VPN' },
+            { term: 'STATUS', desc: <StatusDot tone="critical">Monitoring</StatusDot> },
+          ]}
+        />
         <div>
           <div className="dim mono uppr" style={{marginBottom:6,fontSize:9.5}}>Response actions</div>
           <div style={{display:'flex',flexDirection:'column',gap:4}}>
@@ -553,7 +561,7 @@ export function ExecScreen() {
 
     <div className="row" style={{ gridTemplateColumns: '1fr 1fr 1fr', marginBottom: 0 }}>
       <Panel title="Top risks · ranked">
-        <table className="tbl" style={{fontSize:11.5}}>
+        <Table style={{ fontSize: 11.5 }}>
           <thead><tr><th>Risk</th><th>Trend</th><th className="num" style={{width:48}}>Score</th></tr></thead>
           <tbody>
             <tr><td><span className="ink">Targeted intrusion · APT-441</span></td><td><Spark data={[2,3,4,3,5,6,8]} width={60} height={16} /></td><td className="num" style={{color:'var(--sev-critical)',fontWeight:600}}>94</td></tr>
@@ -563,7 +571,7 @@ export function ExecScreen() {
             <tr><td><span className="ink">GenAI data exposure</span></td><td><Spark data={[1,2,3,5,6,7,9]} width={60} height={16} /></td><td className="num" style={{color:'var(--sev-medium-text)',fontWeight:600}}>71</td></tr>
             <tr><td><span className="ink">3rd-party supply chain</span></td><td><Spark data={[4,4,5,4,4,5,5]} width={60} height={16} /></td><td className="num">62</td></tr>
           </tbody>
-        </table>
+        </Table>
       </Panel>
 
       <Panel title="Regulatory & framework readiness">
